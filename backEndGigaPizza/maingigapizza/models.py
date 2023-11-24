@@ -1,14 +1,14 @@
 from django.db import models
 
 class Categoria(models.Model):
-    nome = models.CharField(max_length=255, null=False)
+    nome = models.CharField(max_length=255, null=False, unique=True)
     is_ativo = models.BooleanField(default=True, null=False)
 
     def __str__(self):
         return f'{self.nome}'
     
 class SubCategoria(models.Model):
-    nome = models.CharField(max_length=255, null=False)
+    nome = models.CharField(max_length=255, null=False, unique=True)
     categoria = models.ForeignKey(Categoria, related_name='categoria_principal',
                                   on_delete=models.RESTRICT, null=False)
     is_ativo = models.BooleanField(default=True, null=False)
@@ -17,7 +17,7 @@ class SubCategoria(models.Model):
         return f'{self.nome}'
     
 class Insumo(models.Model):
-    nome = models.CharField(max_length=255)
+    nome = models.CharField(max_length=255, unique=True)
     preco = models.FloatField(null=False)
     quantidade = models.FloatField(null=False)
 
@@ -27,7 +27,7 @@ class Insumo(models.Model):
 
     
 class Item(models.Model):
-    nome = models.CharField(max_length=255, null=False)
+    nome = models.CharField(max_length=255, null=False, unique=True)
     descricao = models.TextField(blank=True, null=True)
     preco = models.FloatField(null=False)
     subcategoria = models.ForeignKey(SubCategoria, on_delete=models.RESTRICT,
@@ -72,6 +72,7 @@ class Pizza(models.Model):
         null=True,
         blank=True,
     )
+    preco = models.FloatField(null=False)
 
     def __str__(self):
         return f'Pizza {self.nome}'
