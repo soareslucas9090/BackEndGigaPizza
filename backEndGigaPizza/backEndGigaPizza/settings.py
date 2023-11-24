@@ -68,6 +68,7 @@ TEMPLATES = [
     },
 ]
 
+
 WSGI_APPLICATION = 'backEndGigaPizza.wsgi.application'
 
 
