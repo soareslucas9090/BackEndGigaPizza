@@ -16,63 +16,66 @@ class SubCategoria(models.Model):
     def __str__(self):
         return f'{self.nome}'
     
-class Insumo(models.Model):
+class ItemComprado(models.Model):
     nome = models.CharField(max_length=255, unique=True)
     preco = models.FloatField(null=False)
     quantidade = models.FloatField(null=False)
+    unidade = models.CharField(max_length=255, null=False)
 
     def __str__(self):
         return f'{self.nome}'
     
 
     
-class Item(models.Model):
+class ItemVenda(models.Model):
     nome = models.CharField(max_length=255, null=False, unique=True)
     descricao = models.TextField(blank=True, null=True)
     preco = models.FloatField(null=False)
     subcategoria = models.ForeignKey(SubCategoria, on_delete=models.RESTRICT,
         related_name='subcategoria', null=False)
     ingredientes = models.ManyToManyField(
-        'Insumo',
-        through='ItemInsumo',
+        ItemComprado,
+        through='ItemCompradoVenda',
     )
 
     def __str__(self):
-        return f'Item {self.nome}'
+        return f'{self.nome}'
     
-class ItemInsumo(models.Model):
-    item = models.ForeignKey(
-        Item,
+class ItemCompradoVenda(models.Model):
+    item_venda = models.ForeignKey(
+        ItemVenda,
         on_delete=models.RESTRICT,
-        related_name='item_insumos',
+        related_name='itemVenda',
     )
-    insumo = models.ForeignKey(
-        Insumo,
+    item_comprado = models.ForeignKey(
+        ItemComprado,
         on_delete=models.RESTRICT,
-        related_name='item_insumos',
+        related_name='itemComprado',
     )
     quantidade = models.FloatField(null=False)
 
     def __str__(self):
-        return f'ItemInsumo {self.item}, {self.insumo}, {self.quantidade}'
+        return f'ItemCompradoVenda {self.item}, {self.insumo}, {self.quantidade}'
 
 
 class Pizza(models.Model):
     nome = models.CharField(max_length=255, null=False)
     tamanho = models.IntegerField(null=False)
-    sabor1 = models.ForeignKey(
-        Item,
-        on_delete=models.RESTRICT,
-        related_name='pizzas_sabores_1',
-    )
-    sabor2 = models.ForeignKey(
-        Item,
-        on_delete=models.RESTRICT,
-        related_name='pizzas_sabores_2',
-        null=True,
-        blank=True,
-    )
     preco = models.FloatField(null=False)
+    
+    def __str__(self):
+        return f'Pizza {self.nome}'
+    
+class SaborPizza(models.Model):
+    pizza = models.ForeignKey(Pizza,
+        on_delete=models.RESTRICT,
+        related_name='pizza',
+        null=False)
+    
+    item_venda = models.ForeignKey(ItemVenda,
+        on_delete=models.RESTRICT,
+        related_name='item_venda',
+        null=False)
 
     def __str__(self):
         return f'Pizza {self.nome}'
