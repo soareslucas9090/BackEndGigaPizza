@@ -8,7 +8,7 @@ class Categoria(models.Model):
         return f'{self.nome}'
     
 class SubCategoria(models.Model):
-    nome = models.CharField(max_length=255, null=False, unique=True)
+    nome = models.CharField(max_length=255, null=False, unique=False)
     categoria = models.ForeignKey(Categoria, related_name='categoria_principal',
                                   on_delete=models.RESTRICT, null=False)
     is_ativo = models.BooleanField(default=True, null=False)
