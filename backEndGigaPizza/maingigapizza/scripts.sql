@@ -103,6 +103,24 @@ begin
 	   	
 END;
 $$ LANGUAGE plpgsql;
+
+-----Listar Específico-----
+
+CREATE OR REPLACE FUNCTION listar_categoria(id_categoria_pesquisada integer)
+returns table (id_categoria bigint, nome_categoria varchar, is_ativo boolean) as
+$$
+declare
+begin
+	--retorna a categoria pesquisada
+    return query
+    select maingigapizza_categoria.id,
+   		   maingigapizza_categoria.nome,
+   		   maingigapizza_categoria.is_ativo
+   		  from maingigapizza_categoria
+		  where maingigapizza_categoria.id = id_categoria_pesquisada;
+	   	
+END;
+$$ LANGUAGE plpgsql;
 ----------------------FUNÇÕES PARA SUBCATEGORIA----------------------
 ----------------------FUNÇÕES PARA SUBCATEGORIA----------------------
 ----------------------FUNÇÕES PARA SUBCATEGORIA----------------------
@@ -207,6 +225,25 @@ begin
    		   maingigapizza_subcategoria.is_ativo
    		  from maingigapizza_subcategoria
    		 order by maingigapizza_subcategoria.nome;
+	   	
+END;
+$$ LANGUAGE plpgsql;
+
+-----Listar Específico-----
+
+CREATE OR REPLACE FUNCTION listar_subcategoria(id_subcategoria_pesquisada integer)
+returns table (id_subcategoria bigint, nome_subcategoria varchar, id_categoria bigint, is_ativo boolean) as
+$$
+declare
+begin
+	--retorna a subcategoria pesquisada
+    return query
+    select maingigapizza_subcategoria.id,
+   		   maingigapizza_subcategoria.nome,
+   		   maingigapizza_subcategoria.categoria_id,
+   		   maingigapizza_subcategoria.is_ativo
+   		  from maingigapizza_subcategoria
+		  where maingigapizza_subcategoria.id = id_subcategoria_pesquisada;
 	   	
 END;
 $$ LANGUAGE plpgsql;
