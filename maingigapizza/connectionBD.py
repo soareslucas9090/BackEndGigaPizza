@@ -33,7 +33,7 @@ def ativar_categoria(id_categoria):
     with connection.cursor() as cursor:
         # Aqui chamo a função criada no banco
         cursor.execute("SELECT * from ativar_categoria(%s)",[id_categoria])
-        resultado = cursor.fetchall()
+        cursor.fetchall()
         cursor.close()
         
 def listar_categorias():
@@ -87,7 +87,7 @@ def ativar_subcategoria(id_subcategoria):
     with connection.cursor() as cursor:
         # Aqui chamo a função criada no banco
         cursor.execute("SELECT * from ativar_subcategoria(%s)",[id_subcategoria])
-        resultado = cursor.fetchall()
+        cursor.fetchall()
         cursor.close()
         
 def listar_subcategorias():

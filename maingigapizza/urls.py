@@ -6,7 +6,7 @@ urlpatterns = [
     path('cadastrar_categoria/', cadastrarCategoria, name='cadastrar_categoria'),
     path('editar_categoria/', editarCategoria, name='editar_categoria'),
     path('inativar_categoria/', inativarCategoria, name='inativar_categoria'),
-    path('inativar_categoria/', ativarCategoria, name='ativar_categoria'),
+    path('ativar_categoria/', ativarCategoria, name='ativar_categoria'),
     path('listar_categorias/', listarCategorias, name='listar_categorias'),
     path('listar_categoria/<int:pk>', listarCategoria, name='listar_categoria'),
     ###### SUBCATEGORIAS ######
