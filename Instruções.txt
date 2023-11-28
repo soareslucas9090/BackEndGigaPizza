@@ -1,9 +1,0 @@
-Antes de tudo criem uma Venv com o seguinte comando:
-python -m venv venv
-
-Depois digitem o seguinte comando para instalar, na venv, os pacotes necessários:
-pip install -r requirements.txt 
-
-usuario: admin
-senha: adminGiga
-

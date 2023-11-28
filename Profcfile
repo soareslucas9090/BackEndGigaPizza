@@ -1,1 +1,0 @@
-web: gunicorn backendgigapizza.wsgi --log-file -
