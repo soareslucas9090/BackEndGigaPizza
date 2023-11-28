@@ -204,7 +204,7 @@ def ativarSubcategoria(request):
             id_subcategoria = data.get('id_subcategoria')
             
             if id_subcategoria:
-                ativar_categoria(id_subcategoria)
+                ativar_subcategoria(id_subcategoria)
                 return JsonResponse({'resultado': "ok"})
             else:
                 return JsonResponse({'erro': 'O campo "id_subcategoria" é obrigatório.'}, status=400)
