@@ -107,25 +107,19 @@ def listarCategorias(request):
     return JsonResponse({'erro': 'Método não permitido.'}, status=405)
 
 @csrf_exempt
-def listarCategoria(request):
+def listarCategoria(request, pk):
     if request.method == 'GET':
         retorno = []
         try:
-            data = json.loads(request.body)
-            id_categoria = data.get('id_categoria')
-            if id_categoria:
-                categorias = listar_categoria(id_categoria)
-                for categoria in categorias:
-                    retorno.append({
-                        "id_categoria":categoria[0],
-                        "nome_categoria":categoria[1],
-                        "is_active":categoria[2]
-                        })
+            categorias = listar_categoria(pk)
+            for categoria in categorias:
+                retorno.append({
+                    "id_categoria":categoria[0],
+                    "nome_categoria":categoria[1],
+                    "is_active":categoria[2]
+                    })
                 
-                return JsonResponse(retorno[0], encoder=DjangoJSONEncoder, safe=False)
-            
-            else:
-                return JsonResponse({'erro': 'O campo "id_categoria" é obrigatório.'}, status=400)
+            return JsonResponse(retorno[0], encoder=DjangoJSONEncoder, safe=False)
             
         except json.JSONDecodeError:
             return JsonResponse({'erro': 'Erro ao decodificar o JSON.'}, status=400)
@@ -243,26 +237,21 @@ def listarSubcategorias(request):
     return JsonResponse({'erro': 'Método não permitido.'}, status=405)
 
 @csrf_exempt
-def listarSubcategoria(request):
+def listarSubcategoria(request, pk):
     if request.method == 'GET':
         retorno = []
         try:
-            data = json.loads(request.body)
-            id_subcategoria = data.get('id_subcategoria')
-            if id_subcategoria:
-                subcategorias = listar_subcategoria(id_subcategoria)
-                for subcategoria in subcategorias:
-                    retorno.append({
-                    "id_subcategoria":subcategoria[0],
-                    "nome_subcategoria":subcategoria[1],
-                    "id_categoria":subcategoria[2],
-                    "is_active":subcategoria[3]
-                    })
-                
-                return JsonResponse(retorno[0], encoder=DjangoJSONEncoder, safe=False)
             
-            else:
-                return JsonResponse({'erro': 'O campo "id_categoria" é obrigatório.'}, status=400)
+            subcategorias = listar_subcategoria(pk)
+            for subcategoria in subcategorias:
+                retorno.append({
+                "id_subcategoria":subcategoria[0],
+                "nome_subcategoria":subcategoria[1],
+                "id_categoria":subcategoria[2],
+                "is_active":subcategoria[3]
+                })
+                
+            return JsonResponse(retorno[0], encoder=DjangoJSONEncoder, safe=False)
             
         except json.JSONDecodeError:
             return JsonResponse({'erro': 'Erro ao decodificar o JSON.'}, status=400)
