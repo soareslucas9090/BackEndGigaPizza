@@ -257,41 +257,84 @@ $$ LANGUAGE plpgsql;
 
 create or replace function criar_item_comprado(
     nome VARCHAR(50),
+    is_ativo BOOL,
     preco REAL,
     quantidade REAL,
     unidade VARCHAR(30)
 )
-returns integer as $$
-declare
+RETURNS INTEGER AS $$
+DECLARE
     novo_id INTEGER;
-begin
-	
-    insert into item_comprado (nome, preco, quantidade, unidade)
-    values (nome, preco, quantidade, unidade) returning id into novo_id;
+BEGIN
+    INSERT INTO item_comprado (nome,is_ativo, preco, quantidade, unidade)
+    VALUES (nome,is_ativo, preco, quantidade, unidade);
     
-    return novo_id;
-end;
-$$ language plpgsql;
+    return 1;
+END;
+$$ LANGUAGE plpgsql;
 
 -----Editar-----
 
 create or replace function editar_item_comprado(
-    item_comprado_id integer,
-    novo_nome varchar(50),
-    novo_preco real,
-    nova_quantidade real,
-    nova_unidade varchar(30)
+    item_comprado_id INTEGER,
+    novo_nome VARCHAR(50),
+    novo_is_ativo BOOL,
+    novo_preco REAL,
+    nova_quantidade REAL,
+    nova_unidade VARCHAR(30)
 )
-returns void as $$
-begin
-	
-    update item_comprado
-    set nome = novo_nome, preco = novo_preco, quantidade = nova_quantidade, unidade = nova_unidade
-    where id = item_comprado_id;
+RETURNS VOID AS $$
+BEGIN
+    UPDATE item_comprado
+    SET nome = novo_nome,is_ativo = novo_is_ativo, preco = novo_preco, quantidade = nova_quantidade, unidade = nova_unidade
+    WHERE id = item_comprado_id;
+END;
+$$ LANGUAGE plpgsql;
 
-   end;
-  
+-----Inativar-----
+
+create or replace function inativar_item_comprado(id_item_comprado integer)
+returns void as 
+$$
+begin 
+	update item_comprado set is_ativo = false
+	where item_comprado.id = id_item_comprado;
+end
 $$ language plpgsql;
 
+-----Ativar-----
 
+create or replace function ativar_item_comprado(id_item_comprado integer)
+returns void as 
+$$
+begin 
+	update item_comprado set is_ativo = true
+	where item_comprado.id = id_item_comprado;
+end
+$$ language plpgsql;
 
+-----Listar-----
+
+create or replace function listar_itens_comprado()
+returns table(id_item_comprado integer,nome_item_comprado varchar,is_ativo bool) as
+$$
+begin
+	return query
+	select item_comprado.id, item_comprado.nome, item_comprado.is_ativo
+	from item_comprado
+	order by item_comprado.nome;
+end;
+$$ language plpgsql;
+
+-----Listar Específico-----
+
+create or replace function listar_item_comprado(id_item_comprado_pesquisado integer)
+returns table(id_item_comprado integer,nome_item_comprado varchar,is_ativo bool) as
+$$
+begin
+	return query
+	select item_comprado.id, item_comprado.nome, item_comprado.is_ativo
+	from item_comprado
+	where item_comprado.id = id_item_comprado_pesquisado;
+end;
+$$ language plpgsql;
