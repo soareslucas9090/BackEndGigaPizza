@@ -247,3 +247,51 @@ begin
 	   	
 END;
 $$ LANGUAGE plpgsql;
+
+
+----------------------FUNÇÕES PARA ITEM COMPRADO----------------------
+----------------------FUNÇÕES PARA ITEM COMPRADO----------------------
+----------------------FUNÇÕES PARA ITEM COMPRADO----------------------
+
+-----Criar-----
+
+create or replace function criar_item_comprado(
+    nome VARCHAR(50),
+    preco REAL,
+    quantidade REAL,
+    unidade VARCHAR(30)
+)
+returns integer as $$
+declare
+    novo_id INTEGER;
+begin
+	
+    insert into item_comprado (nome, preco, quantidade, unidade)
+    values (nome, preco, quantidade, unidade) returning id into novo_id;
+    
+    return novo_id;
+end;
+$$ language plpgsql;
+
+-----Editar-----
+
+create or replace function editar_item_comprado(
+    item_comprado_id integer,
+    novo_nome varchar(50),
+    novo_preco real,
+    nova_quantidade real,
+    nova_unidade varchar(30)
+)
+returns void as $$
+begin
+	
+    update item_comprado
+    set nome = novo_nome, preco = novo_preco, quantidade = nova_quantidade, unidade = nova_unidade
+    where id = item_comprado_id;
+
+   end;
+  
+$$ language plpgsql;
+
+
+
