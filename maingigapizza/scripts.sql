@@ -256,20 +256,62 @@ $$ LANGUAGE plpgsql;
 -----Criar-----
 
 create or replace function criar_item_comprado(
-    nome VARCHAR(50),
-    is_ativo BOOL,
-    preco REAL,
-    quantidade REAL,
-    unidade VARCHAR(30)
+    nome VARCHAR,
+    preco float,
+    quantidade float,
+    unidade VARCHAR
 )
 RETURNS INTEGER AS $$
 DECLARE
     novo_id INTEGER;
 BEGIN
-    INSERT INTO item_comprado (nome,is_ativo, preco, quantidade, unidade)
-    VALUES (nome,is_ativo, preco, quantidade, unidade);
+	PERFORM * FROM maingigapizza_item_comprado
+	WHERE INITCAP(maingigapizza_item_comprado.nome) = INITCAP(nome);
+	--se encontrar retorna 0
+	IF FOUND THEN
+		return 0;
+	else
+		select coalesce(max(maingigapizza_item_comprado.id),0) + 1 from maingigapizza_item_comprado into novo_id;
+
+    	INSERT INTO maingigapizza_item_comprado (id,nome,is_ativo, preco, quantidade, unidade)
+    	VALUES (novo_id,nome, true, preco, quantidade, unidade);
     
-    return 1;
+    	return novo_id;
+		end if;
+		return 0;
+
+		--Legenda:
+		--Retorna o id da nova categoria se a inserção for válida e única
+		--Retorna '0' se a categoria a ser inserida já existe
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION criar_categoria(nome_categoria varchar)
+RETURNS integer AS
+$$
+declare
+	id_insercao integer;
+begin 
+	--Verifica se há uma categoria com o mesmo nome
+	PERFORM * FROM maingigapizza_categoria
+	WHERE INITCAP(maingigapizza_categoria.nome) = INITCAP(nome_categoria);
+	--se encontrar retorna 0
+	IF FOUND THEN
+		return 0;
+	else
+		select coalesce(max(maingigapizza_categoria.id),0) + 1 from maingigapizza_categoria into id_insercao;
+	
+		insert into maingigapizza_categoria values
+		(id_insercao, INITCAP(nome_categoria), true);
+												
+		RETURN id_insercao;
+	END IF;
+	RETURN 0;
+
+	--Legenda:
+	--Retorna o id da nova categoria se a inserção for válida e única
+	--Retorna '0' se a categoria a ser inserida já existe
 END;
 $$ LANGUAGE plpgsql;
 
@@ -277,17 +319,30 @@ $$ LANGUAGE plpgsql;
 
 create or replace function editar_item_comprado(
     item_comprado_id INTEGER,
-    novo_nome VARCHAR(50),
-    novo_is_ativo BOOL,
-    novo_preco REAL,
-    nova_quantidade REAL,
-    nova_unidade VARCHAR(30)
+    novo_nome VARCHAR,
+    novo_preco float,
+    nova_quantidade float,
+    nova_unidade VARCHAR
 )
-RETURNS VOID AS $$
+RETURNS integer AS $$
 BEGIN
-    UPDATE item_comprado
-    SET nome = novo_nome,is_ativo = novo_is_ativo, preco = novo_preco, quantidade = nova_quantidade, unidade = nova_unidade
-    WHERE id = item_comprado_id;
+
+	--Verifica se há uma subcategoria com o mesmo nome e mesma categoria
+	PERFORM * FROM maingigapizza_item_comprado
+	WHERE INITCAP(maingigapizza_item_comprado.nome) = INITCAP(novo_nome);
+	--se encontrar é retornado 0
+	IF FOUND THEN
+		return 0;
+	else
+    	UPDATE maingigapizza_item_comprado
+    	SET nome = novo_nome, preco = novo_preco, quantidade = nova_quantidade, unidade = nova_unidade
+    	WHERE id = item_comprado_id;
+		RETURN 1;
+	--Legenda:
+	--Retorna '1' se a edição for válida e única
+	--Retorna '0' se o nome a ser inserido já existe
+	END IF;
+	RETURN 0;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -297,8 +352,8 @@ create or replace function inativar_item_comprado(id_item_comprado integer)
 returns void as 
 $$
 begin 
-	update item_comprado set is_ativo = false
-	where item_comprado.id = id_item_comprado;
+	update maingigapizza_item_comprado set is_ativo = false
+	where maingigapizza_item_comprado.id = id_item_comprado;
 end
 $$ language plpgsql;
 
@@ -308,21 +363,27 @@ create or replace function ativar_item_comprado(id_item_comprado integer)
 returns void as 
 $$
 begin 
-	update item_comprado set is_ativo = true
-	where item_comprado.id = id_item_comprado;
+	update maingigapizza_item_comprado set is_ativo = true
+	where maingigapizza_item_comprado.id = id_item_comprado;
 end
 $$ language plpgsql;
 
 -----Listar-----
 
 create or replace function listar_itens_comprado()
-returns table(id_item_comprado integer,nome_item_comprado varchar,is_ativo bool) as
+returns table(id integer,nome varchar, preco float, qtd float, unidade varchar, is_ativo boolean) as
 $$
 begin
+	--retorna todas as categorias pesquisadas
 	return query
-	select item_comprado.id, item_comprado.nome, item_comprado.is_ativo
-	from item_comprado
-	order by item_comprado.nome;
+	select maingigapizza_item_comprado.id,
+		   maingigapizza_item_comprado.nome,
+		   maingigapizza_item_comprado.preco,
+		   maingigapizza_item_comprado.quantidade,
+		   maingigapizza_item_comprado.unidade,
+		   maingigapizza_item_comprado.is_ativo
+	from maingigapizza_item_comprado
+	order by maingigapizza_item_comprado.nome;
 end;
 $$ language plpgsql;
 
@@ -332,9 +393,15 @@ create or replace function listar_item_comprado(id_item_comprado_pesquisado inte
 returns table(id_item_comprado integer,nome_item_comprado varchar,is_ativo bool) as
 $$
 begin
+	--retorna a categoria pesquisada
 	return query
-	select item_comprado.id, item_comprado.nome, item_comprado.is_ativo
-	from item_comprado
-	where item_comprado.id = id_item_comprado_pesquisado;
+	select maingigapizza_item_comprado.id,
+		   maingigapizza_item_comprado.nome,
+		   maingigapizza_item_comprado.preco,
+		   maingigapizza_item_comprado.quantidade,
+		   maingigapizza_item_comprado.unidade,
+		   maingigapizza_item_comprado.is_ativo
+	from maingigapizza_item_comprado
+	where maingigapizza_item_comprado.id = id_item_comprado_pesquisado;
 end;
 $$ language plpgsql;

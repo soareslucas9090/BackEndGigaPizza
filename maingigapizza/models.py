@@ -1,5 +1,6 @@
 from django.db import models
 
+
 class Categoria(models.Model):
     nome = models.CharField(max_length=255, null=False, unique=True)
     is_ativo = models.BooleanField(default=True, null=False)
@@ -7,7 +8,10 @@ class Categoria(models.Model):
     def __str__(self):
         return f'{self.nome}'
     
+     
 class SubCategoria(models.Model):
+    
+    
     nome = models.CharField(max_length=255, null=False, unique=False)
     categoria = models.ForeignKey(Categoria, related_name='categoria_principal',
                                   on_delete=models.RESTRICT, null=False)
@@ -21,6 +25,7 @@ class ItemComprado(models.Model):
     preco = models.FloatField(null=False)
     quantidade = models.FloatField(null=False)
     unidade = models.CharField(max_length=255, null=False)
+    is_ativo = models.BooleanField(default=True, null=False)
 
     def __str__(self):
         return f'{self.nome}'
