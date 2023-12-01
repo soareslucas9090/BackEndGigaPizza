@@ -121,6 +121,8 @@ begin
 	   	
 END;
 $$ LANGUAGE plpgsql;
+
+
 ----------------------FUNÇÕES PARA SUBCATEGORIA----------------------
 ----------------------FUNÇÕES PARA SUBCATEGORIA----------------------
 ----------------------FUNÇÕES PARA SUBCATEGORIA----------------------
@@ -265,6 +267,8 @@ RETURNS INTEGER AS $$
 DECLARE
     novo_id INTEGER;
 BEGIN
+	--Verifica se há um item comprado com o mesmo nome
+	
 	PERFORM * FROM maingigapizza_item_comprado
 	WHERE INITCAP(maingigapizza_item_comprado.nome) = INITCAP(nome);
 	--se encontrar retorna 0
@@ -281,39 +285,11 @@ BEGIN
 		return 0;
 
 		--Legenda:
-		--Retorna o id da nova categoria se a inserção for válida e única
-		--Retorna '0' se a categoria a ser inserida já existe
+		--Retorna o id do novo item comprado se a inserção for válida e única
+		--Retorna '0' se o item comprado a ser inserido já existe
 END;
 $$ LANGUAGE plpgsql;
 
-
-CREATE OR REPLACE FUNCTION criar_categoria(nome_categoria varchar)
-RETURNS integer AS
-$$
-declare
-	id_insercao integer;
-begin 
-	--Verifica se há uma categoria com o mesmo nome
-	PERFORM * FROM maingigapizza_categoria
-	WHERE INITCAP(maingigapizza_categoria.nome) = INITCAP(nome_categoria);
-	--se encontrar retorna 0
-	IF FOUND THEN
-		return 0;
-	else
-		select coalesce(max(maingigapizza_categoria.id),0) + 1 from maingigapizza_categoria into id_insercao;
-	
-		insert into maingigapizza_categoria values
-		(id_insercao, INITCAP(nome_categoria), true);
-												
-		RETURN id_insercao;
-	END IF;
-	RETURN 0;
-
-	--Legenda:
-	--Retorna o id da nova categoria se a inserção for válida e única
-	--Retorna '0' se a categoria a ser inserida já existe
-END;
-$$ LANGUAGE plpgsql;
 
 -----Editar-----
 
@@ -327,7 +303,7 @@ create or replace function editar_item_comprado(
 RETURNS integer AS $$
 BEGIN
 
-	--Verifica se há uma subcategoria com o mesmo nome e mesma categoria
+	--Verifica se há um Item comprado com o mesmo nome
 	PERFORM * FROM maingigapizza_item_comprado
 	WHERE INITCAP(maingigapizza_item_comprado.nome) = INITCAP(novo_nome);
 	--se encontrar é retornado 0
@@ -374,7 +350,7 @@ create or replace function listar_itens_comprado()
 returns table(id integer,nome varchar, preco float, qtd float, unidade varchar, is_ativo boolean) as
 $$
 begin
-	--retorna todas as categorias pesquisadas
+	--retorna todos os items comprados pesquisados
 	return query
 	select maingigapizza_item_comprado.id,
 		   maingigapizza_item_comprado.nome,
@@ -393,7 +369,7 @@ create or replace function listar_item_comprado(id_item_comprado_pesquisado inte
 returns table(id_item_comprado integer,nome_item_comprado varchar,is_ativo bool) as
 $$
 begin
-	--retorna a categoria pesquisada
+	--retorna o item comprado pesquisado
 	return query
 	select maingigapizza_item_comprado.id,
 		   maingigapizza_item_comprado.nome,
@@ -405,3 +381,57 @@ begin
 	where maingigapizza_item_comprado.id = id_item_comprado_pesquisado;
 end;
 $$ language plpgsql;
+
+----------------------FUNÇÕES PARA ITEM VENDA----------------------
+----------------------FUNÇÕES PARA ITEM VENDA----------------------
+----------------------FUNÇÕES PARA ITEM VENDA----------------------
+
+
+----criar-----
+
+CREATE OR REPLACE FUNCTION criar_item_venda(
+	nome VARCHAR,
+	descricao VARCHAR,
+	preco FLOAT,
+	subcategoria_id integer
+)
+
+RETURNS INTEGER AS $$
+DECLARE
+	novo_id integer;
+BEGIN
+	PERFORM * FROM maingigapizza_itemvenda
+	WHERE INITCAP(maingigapizza_itemvenda.nome) = INITCAP(nome);
+	--se encontar retorna 0
+	
+	IF FOUND THEN
+		return 0;
+		
+	ELSE
+		SELECT coalesce(max(maingigapizza_itemvenda.id),0) +1 FROM maingigapizza_itemvenda into novo_id;
+		
+	INSERT INTO maingigapizza_itemvenda (id, nome, descricao, preco, subcategoria_id, is_ativo)
+	VALUES (novo_id, nome, descricao, preco, subcategoria_id,true);
+	
+	RETURN novo_id;
+	END IF;
+	RETURN 0;
+		--Legenda:
+		--Retorna o id do novo item venda se a inserção for válida e única
+		--Retorna '0' se o novo item venda a ser inserido já existe
+
+END
+$$ language plpgsql;
+
+
+
+
+
+
+
+
+
+
+
+
+
