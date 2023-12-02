@@ -258,7 +258,7 @@ $$ LANGUAGE plpgsql;
 -----Criar-----
 
 create or replace function criar_item_comprado(
-    nome VARCHAR,
+    nome_item VARCHAR,
     preco float,
     quantidade float,
     unidade VARCHAR
@@ -269,16 +269,16 @@ DECLARE
 BEGIN
 	--Verifica se há um item comprado com o mesmo nome
 	
-	PERFORM * FROM maingigapizza_item_comprado
-	WHERE INITCAP(maingigapizza_item_comprado.nome) = INITCAP(nome);
+	PERFORM * FROM maingigapizza_itemcomprado
+	WHERE INITCAP(maingigapizza_itemcomprado.nome) = INITCAP(nome_item);
 	--se encontrar retorna 0
 	IF FOUND THEN
 		return 0;
 	else
-		select coalesce(max(maingigapizza_item_comprado.id),0) + 1 from maingigapizza_item_comprado into novo_id;
+		select coalesce(max(maingigapizza_itemcomprado.id),0) + 1 from maingigapizza_itemcomprado into novo_id;
 
-    	INSERT INTO maingigapizza_item_comprado (id,nome,is_ativo, preco, quantidade, unidade)
-    	VALUES (novo_id,nome, true, preco, quantidade, unidade);
+    	INSERT INTO maingigapizza_itemcomprado (id,nome,is_ativo, preco, quantidade, unidade)
+    	VALUES (novo_id,nome_item, true, preco, quantidade, unidade);
     
     	return novo_id;
 		end if;
@@ -304,13 +304,14 @@ RETURNS integer AS $$
 BEGIN
 
 	--Verifica se há um Item comprado com o mesmo nome
-	PERFORM * FROM maingigapizza_item_comprado
-	WHERE INITCAP(maingigapizza_item_comprado.nome) = INITCAP(novo_nome);
+	PERFORM * FROM maingigapizza_itemcomprado
+	WHERE INITCAP(maingigapizza_itemcomprado.nome) = INITCAP(novo_nome)
+	and maingigapizza_itemcomprado.id != item_comprado_id;
 	--se encontrar é retornado 0
 	IF FOUND THEN
 		return 0;
 	else
-    	UPDATE maingigapizza_item_comprado
+    	UPDATE maingigapizza_itemcomprado
     	SET nome = novo_nome, preco = novo_preco, quantidade = nova_quantidade, unidade = nova_unidade
     	WHERE id = item_comprado_id;
 		RETURN 1;
@@ -322,14 +323,15 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+
 -----Inativar-----
 
 create or replace function inativar_item_comprado(id_item_comprado integer)
 returns void as 
 $$
 begin 
-	update maingigapizza_item_comprado set is_ativo = false
-	where maingigapizza_item_comprado.id = id_item_comprado;
+	update maingigapizza_itemcomprado set is_ativo = false
+	where maingigapizza_itemcomprado.id = id_item_comprado;
 end
 $$ language plpgsql;
 
@@ -339,46 +341,47 @@ create or replace function ativar_item_comprado(id_item_comprado integer)
 returns void as 
 $$
 begin 
-	update maingigapizza_item_comprado set is_ativo = true
-	where maingigapizza_item_comprado.id = id_item_comprado;
+	update maingigapizza_itemcomprado set is_ativo = true
+	where maingigapizza_itemcomprado.id = id_item_comprado;
 end
 $$ language plpgsql;
 
 -----Listar-----
 
 create or replace function listar_itens_comprado()
-returns table(id integer,nome varchar, preco float, qtd float, unidade varchar, is_ativo boolean) as
+returns table(id bigint,nome varchar, preco float, qtd float, unidade varchar, is_ativo boolean) as
 $$
 begin
 	--retorna todos os items comprados pesquisados
 	return query
-	select maingigapizza_item_comprado.id,
-		   maingigapizza_item_comprado.nome,
-		   maingigapizza_item_comprado.preco,
-		   maingigapizza_item_comprado.quantidade,
-		   maingigapizza_item_comprado.unidade,
-		   maingigapizza_item_comprado.is_ativo
-	from maingigapizza_item_comprado
-	order by maingigapizza_item_comprado.nome;
+	select maingigapizza_itemcomprado.id,
+		   maingigapizza_itemcomprado.nome,
+		   maingigapizza_itemcomprado.preco,
+		   maingigapizza_itemcomprado.quantidade,
+		   maingigapizza_itemcomprado.unidade,
+		   maingigapizza_itemcomprado.is_ativo
+	from maingigapizza_itemcomprado
+	order by maingigapizza_itemcomprado.nome;
 end;
 $$ language plpgsql;
 
 -----Listar Específico-----
 
 create or replace function listar_item_comprado(id_item_comprado_pesquisado integer)
-returns table(id_item_comprado integer,nome_item_comprado varchar,is_ativo bool) as
+returns table(id_item_comprado bigint,nome_item_comprado varchar, preco float,
+				qtd float, unidade varchar, is_ativo bool) as
 $$
 begin
 	--retorna o item comprado pesquisado
 	return query
-	select maingigapizza_item_comprado.id,
-		   maingigapizza_item_comprado.nome,
-		   maingigapizza_item_comprado.preco,
-		   maingigapizza_item_comprado.quantidade,
-		   maingigapizza_item_comprado.unidade,
-		   maingigapizza_item_comprado.is_ativo
-	from maingigapizza_item_comprado
-	where maingigapizza_item_comprado.id = id_item_comprado_pesquisado;
+	select maingigapizza_itemcomprado.id,
+		   maingigapizza_itemcomprado.nome,
+		   maingigapizza_itemcomprado.preco,
+		   maingigapizza_itemcomprado.quantidade,
+		   maingigapizza_itemcomprado.unidade,
+		   maingigapizza_itemcomprado.is_ativo
+	from maingigapizza_itemcomprado
+	where maingigapizza_itemcomprado.id = id_item_comprado_pesquisado;
 end;
 $$ language plpgsql;
 
