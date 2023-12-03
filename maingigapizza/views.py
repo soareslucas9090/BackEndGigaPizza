@@ -346,3 +346,76 @@ def inativarSubcategoria(request):
             return JsonResponse({'erro': 'Erro ao decodificar o JSON.'}, status=400)
 
     return JsonResponse({'erro': 'Método não permitido.'}, status=405)
+
+#### ativar_item_comprado ####
+
+@csrf_exempt
+def ativar_item_comprado(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            id_item_comprado = data.get('id_item_comprado')
+            
+            if id_item_comprado:
+                ativar_categoria(id_item_comprado)
+                return JsonResponse({'resultado': "ok"})
+            else:
+                return JsonResponse({'erro': 'O campo "id_item_comprado" é obrigatório.'}, status=400)
+            
+        except json.JSONDecodeError:
+            return JsonResponse({'erro': 'Erro ao decodificar o JSON.'}, status=400)
+
+    return JsonResponse({'erro': 'Método não permitido.'}, status=405)
+
+
+#### listar_itens_comprado ####
+
+@csrf_exempt
+def listar_itens_comprado(request):
+    if request.method == 'GET':
+        retorno = []
+        try:
+            itens = listar_itens_comprado()
+            for item in itens:
+                retorno.append({
+                    "id_item_comprado":item[0],
+                    "nome_item_comprado":item[1],
+                    "preco":item[2],
+                    "qtd":item[3],
+                    "unidade":item[4],
+                    "is_active":item[5]
+                    })
+                
+            return JsonResponse(retorno, encoder=DjangoJSONEncoder, safe=False)
+            
+        except json.JSONDecodeError:
+            return JsonResponse({'erro': 'Erro ao decodificar o JSON.'}, status=400)
+
+    return JsonResponse({'erro': 'Método não permitido.'}, status=405)
+
+####   listar_item_comprado    ####
+
+@csrf_exempt
+def listar_item_comprado(request, pk):
+    if request.method == 'GET':
+        retorno = []
+        try:
+            
+            itens = listar_item_comprado(pk)
+            for item in itens:
+                retorno.append({
+                "id_item_comprado":item[0],
+                "nome_item_comprado":item[1],
+                "preco":item[2],
+                "qtd":item[3],
+                "unidade":item[4],
+                "is_active":item[5]
+                })
+                
+            return JsonResponse(retorno[0], encoder=DjangoJSONEncoder, safe=False)
+            
+        except json.JSONDecodeError:
+            return JsonResponse({'erro': 'Erro ao decodificar o JSON.'}, status=400)
+
+    return JsonResponse({'erro': 'Método não permitido.'}, status=405)
+
