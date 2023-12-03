@@ -257,3 +257,92 @@ def listarSubcategoria(request, pk):
             return JsonResponse({'erro': 'Erro ao decodificar o JSON.'}, status=400)
 
     return JsonResponse({'erro': 'Método não permitido.'}, status=405)
+
+
+###################     ITEM COMPRADO    ###################
+
+#### criar_item_comprado  ####
+
+@csrf_exempt
+def criar_item_comprado(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            nome_item_comprado = data.get('nome_item_comprado')
+            preco_item_comprado = data.get('preco_item_comprado')
+            quantidade_item_comprado = data.get('quantidade_item_comprado')
+            unidade_item_comprado = data.get('unidade_item_comprado')
+
+            if nome_item_comprado:
+                if preco_item_comprado:
+                    if quantidade_item_comprado:
+                        if unidade_item_comprado:
+                            resultado = criar_item_comprado(nome_item_comprado)
+                            return JsonResponse({'resultado': resultado})
+                        else:
+                            return JsonResponse({'erro': 'O campo "unidade_item_comprado" é obrigatório.'}, status=400)
+                    else:
+                        return JsonResponse({'erro': 'O campo "quantidade_item_comprado" é obrigatório.'}, status=400)
+                else:
+                    return JsonResponse({'erro': 'O campo "preco_item_comprado" é obrigatório.'}, status=400)
+            else:
+                return JsonResponse({'erro': 'O campo "nome_item_comprado" é obrigatório.'}, status=400)
+        except json.JSONDecodeError:
+            return JsonResponse({'erro': 'Erro ao decodificar o JSON.'}, status=400)
+
+    return JsonResponse({'erro': 'Método não permitido.'}, status=405)
+
+#### editar_item_comprado  ####
+
+@csrf_exempt
+def editar_item_comprado(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            item_comprado_id = data.get('item_comprado_id')
+            nome = data.get('nome')
+            preco = data.get('preco')
+            quantidade = data.get('quantidade')
+            unidade = data.get('unidade')
+
+            if item_comprado_id:
+                if nome:
+                    if preco:
+                        if quantidade:
+                            if unidade:
+                                resultado = editar_item_comprado(item_comprado_id, nome, preco, quantidade, unidade)
+                                return JsonResponse({'resultado': resultado})
+                            else:
+                                return JsonResponse({'erro': 'O campo "unidade" é obrigatório.'}, status=400)
+                        else:
+                            return JsonResponse({'erro': 'O campo "quantidade" é obrigatório.'}, status=400)
+                    else:
+                        return JsonResponse({'erro': 'O campo "preco" é obrigatório.'}, status=400)
+                else:
+                    return JsonResponse({'erro': 'O campo "nome" é obrigatório.'}, status=400)
+            else:
+                return JsonResponse({'erro': 'O campo "item_comprado_id" é obrigatório.'}, status=400)
+        except json.JSONDecodeError:
+            return JsonResponse({'erro': 'Erro ao decodificar o JSON.'}, status=400)
+
+    return JsonResponse({'erro': 'Método não permitido.'}, status=405)
+
+#### inativar_item_comprado  ####
+
+@csrf_exempt
+def inativarSubcategoria(request):
+    if request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+            id_item_comprado = data.get('id_item_comprado')
+            
+            if id_item_comprado:
+                inativar_subcategoria(id_item_comprado)
+                return JsonResponse({'resultado': "ok"})
+            else:
+                return JsonResponse({'erro': 'O campo "id_item_comprado" é obrigatório.'}, status=400)
+            
+        except json.JSONDecodeError:
+            return JsonResponse({'erro': 'Erro ao decodificar o JSON.'}, status=400)
+
+    return JsonResponse({'erro': 'Método não permitido.'}, status=405)
