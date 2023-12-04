@@ -16,4 +16,12 @@ urlpatterns = [
     path('ativar_subcategoria/', ativarSubcategoria, name='ativar_sucategoria'),
     path('listar_subcategorias/', listarSubcategorias, name='listar_sucategorias'),
     path('listar_subcategoria/<int:pk>', listarSubcategoria, name='listar_sucategoria'),
+    ###### ITEM COMPRADO ######
+    path('criar_item_comprado/', criarItemComprado, name='criar_item_comprado'),
+    path('editar_item_comprado/', editarItemComprado, name='editar_item_comprado'),
+    path('inativar_Subcategoria/', inativarSubcategoria, name='inativar_Subcategoria'),
+    path('ativar_item_comprado/', ativarItemComprado, name='ativar_item_comprado'),
+    path('listar_itens_comprado/', listarItensComprado, name='listar_itens_comprado'),
+    path('listar_item_compradoo/<int:pk>', listarItemComprado, name='listar_item_comprado'),
+
 ]
