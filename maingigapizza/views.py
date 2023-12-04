@@ -340,7 +340,7 @@ def inativarItemComprado(request):
             id_item_comprado = data.get('id_item_comprado')
             
             if id_item_comprado:
-                inativar_subcategoria(id_item_comprado)
+                inativar_item_comprado(id_item_comprado)
                 return JsonResponse({'resultado': "ok"})
             else:
                 return JsonResponse({'erro': 'O campo "id_item_comprado" é obrigatório.'}, status=400)
@@ -360,7 +360,7 @@ def ativarItemComprado(request):
             id_item_comprado = data.get('id_item_comprado')
             
             if id_item_comprado:
-                ativar_categoria(id_item_comprado)
+                ativar_item_comprado(id_item_comprado)
                 return JsonResponse({'resultado': "ok"})
             else:
                 return JsonResponse({'erro': 'O campo "id_item_comprado" é obrigatório.'}, status=400)
