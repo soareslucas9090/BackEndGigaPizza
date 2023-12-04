@@ -383,9 +383,9 @@ def listarItensComprados(request):
                 retorno.append({
                     "id_item_comprado":item[0],
                     "nome_item_comprado":item[1],
-                    "preco":item[2],
-                    "qtd":item[3],
-                    "unidade":item[4],
+                    "preco_item_comprado":item[2],
+                    "quantidade_item_comprado":item[3],
+                    "unidade_item_comprado":item[4],
                     "is_active":item[5]
                     })
                 
@@ -408,9 +408,9 @@ def listarItemComprado(request, pk):
                 retorno.append({
                 "id_item_comprado":item[0],
                 "nome_item_comprado":item[1],
-                "preco":item[2],
-                "qtd":item[3],
-                "unidade":item[4],
+                "preco_item_comprado":item[2],
+                "quantidade_item_comprado":item[3],
+                "unidade_item_comprado":item[4],
                 "is_active":item[5]
                 })
                 
