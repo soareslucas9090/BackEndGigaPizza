@@ -266,7 +266,7 @@ def listarSubcategoria(request, pk):
 #### criar_item_comprado  ####
 
 @csrf_exempt
-def criar_item_comprado(request):
+def criarItemComprado(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
@@ -297,7 +297,7 @@ def criar_item_comprado(request):
 #### editar_item_comprado  ####
 
 @csrf_exempt
-def editar_item_comprado(request):
+def editarItemComprado(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
@@ -332,7 +332,7 @@ def editar_item_comprado(request):
 #### inativar_item_comprado  ####
 
 @csrf_exempt
-def inativar_item_comprado(request):
+def inativarItemComprado(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
@@ -352,7 +352,7 @@ def inativar_item_comprado(request):
 #### ativar_item_comprado ####
 
 @csrf_exempt
-def ativar_item_comprado(request):
+def ativarItemComprado(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
@@ -373,7 +373,7 @@ def ativar_item_comprado(request):
 #### listar_itens_comprado ####
 
 @csrf_exempt
-def listar_itens_comprados(request):
+def listarItensComprados(request):
     if request.method == 'GET':
         retorno = []
         try:
@@ -398,11 +398,10 @@ def listar_itens_comprados(request):
 ####   listar_item_comprado    ####
 
 @csrf_exempt
-def listar_item_comprado(request, pk):
+def listarItemComprado(request, pk):
     if request.method == 'GET':
         retorno = []
-        try:
-            
+        try:            
             itens = listar_item_comprado(pk)
             for item in itens:
                 retorno.append({
