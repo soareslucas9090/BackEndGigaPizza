@@ -88,7 +88,7 @@ def main8():
         cursor.fetchall()
         cursor.close()
         
-def main():      
+def main9():      
     with connection.cursor() as cursor:
         # Aqui chamo a função criada no banco
         cursor.execute("SELECT * from listar_item_comprado(%s)",[1])

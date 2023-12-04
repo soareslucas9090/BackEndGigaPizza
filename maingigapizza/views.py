@@ -1,9 +1,11 @@
-from django.shortcuts import render
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.core.serializers.json import DjangoJSONEncoder
-from .connectionBD import *
 import json
+
+from django.core.serializers.json import DjangoJSONEncoder
+from django.http import JsonResponse
+from django.shortcuts import render
+from django.views.decorators.csrf import csrf_exempt
+
+from .connectionBD import *
 
 ###################     CATEGORIA     ###################
 
@@ -330,7 +332,7 @@ def editar_item_comprado(request):
 #### inativar_item_comprado  ####
 
 @csrf_exempt
-def inativarSubcategoria(request):
+def inativar_item_comprado(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
@@ -371,7 +373,7 @@ def ativar_item_comprado(request):
 #### listar_itens_comprado ####
 
 @csrf_exempt
-def listar_itens_comprado(request):
+def listar_itens_comprados(request):
     if request.method == 'GET':
         retorno = []
         try:
