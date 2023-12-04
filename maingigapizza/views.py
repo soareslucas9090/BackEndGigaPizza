@@ -302,11 +302,11 @@ def editarItemComprado(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
-            item_comprado_id = data.get('item_comprado_id')
-            nome = data.get('nome')
-            preco = data.get('preco')
-            quantidade = data.get('quantidade')
-            unidade = data.get('unidade')
+            item_comprado_id = data.get('id_item_comprado')
+            nome = data.get('nome_item_comprado')
+            preco = data.get('preco_item_comprado')
+            quantidade = data.get('quantidade_item_comprado')
+            unidade = data.get('unidade_item_comprado')
 
             if item_comprado_id:
                 if nome:
@@ -316,15 +316,15 @@ def editarItemComprado(request):
                                 resultado = editar_item_comprado(item_comprado_id, nome, preco, quantidade, unidade)
                                 return JsonResponse({'resultado': resultado})
                             else:
-                                return JsonResponse({'erro': 'O campo "unidade" é obrigatório.'}, status=400)
+                                return JsonResponse({'erro': 'O campo "unidade_item_comprado" é obrigatório.'}, status=400)
                         else:
-                            return JsonResponse({'erro': 'O campo "quantidade" é obrigatório.'}, status=400)
+                            return JsonResponse({'erro': 'O campo "quantidade_item_comprado" é obrigatório.'}, status=400)
                     else:
-                        return JsonResponse({'erro': 'O campo "preco" é obrigatório.'}, status=400)
+                        return JsonResponse({'erro': 'O campo "preco_item_comprado" é obrigatório.'}, status=400)
                 else:
-                    return JsonResponse({'erro': 'O campo "nome" é obrigatório.'}, status=400)
+                    return JsonResponse({'erro': 'O campo "nome_item_comprado" é obrigatório.'}, status=400)
             else:
-                return JsonResponse({'erro': 'O campo "item_comprado_id" é obrigatório.'}, status=400)
+                return JsonResponse({'erro': 'O campo "id_item_comprado" é obrigatório.'}, status=400)
         except json.JSONDecodeError:
             return JsonResponse({'erro': 'Erro ao decodificar o JSON.'}, status=400)
 

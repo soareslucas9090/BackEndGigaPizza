@@ -24,5 +24,4 @@ urlpatterns = [
     path('ativar_item_comprado/', ativarItemComprado, name='ativar_item_comprado'),
     path('listar_itens_comprados/', listarItensComprados, name='listar_itens_comprado'),
     path('listar_item_compradoo/<int:pk>', listarItemComprado, name='listar_item_comprado'),
-
 ]
