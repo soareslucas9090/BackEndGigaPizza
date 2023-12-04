@@ -279,7 +279,8 @@ def criarItemComprado(request):
                 if preco_item_comprado:
                     if quantidade_item_comprado:
                         if unidade_item_comprado:
-                            resultado = criar_item_comprado(nome_item_comprado)
+                            resultado = criar_item_comprado(nome_item_comprado, preco_item_comprado,
+                                                            quantidade_item_comprado, unidade_item_comprado)
                             return JsonResponse({'resultado': resultado})
                         else:
                             return JsonResponse({'erro': 'O campo "unidade_item_comprado" é obrigatório.'}, status=400)
