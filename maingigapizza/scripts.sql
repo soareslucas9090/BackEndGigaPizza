@@ -390,10 +390,10 @@ $$ language plpgsql;
 ----------------------FUNÇÕES PARA ITEM VENDA----------------------
 
 
-----criar-----
+----Criar-----
 
 CREATE OR REPLACE FUNCTION criar_item_venda(
-	nome VARCHAR,
+	nome_item VARCHAR,
 	descricao VARCHAR,
 	preco FLOAT,
 	subcategoria_id integer
@@ -404,7 +404,7 @@ DECLARE
 	novo_id integer;
 BEGIN
 	PERFORM * FROM maingigapizza_itemvenda
-	WHERE INITCAP(maingigapizza_itemvenda.nome) = INITCAP(nome);
+	WHERE INITCAP(maingigapizza_itemvenda.nome) = INITCAP(nome_item);
 	--se encontar retorna 0
 	
 	IF FOUND THEN
@@ -414,7 +414,7 @@ BEGIN
 		SELECT coalesce(max(maingigapizza_itemvenda.id),0) +1 FROM maingigapizza_itemvenda into novo_id;
 		
 	INSERT INTO maingigapizza_itemvenda (id, nome, descricao, preco, subcategoria_id, is_ativo)
-	VALUES (novo_id, nome, descricao, preco, subcategoria_id,true);
+	VALUES (novo_id, nome_item, descricao, preco, subcategoria_id,true);
 	
 	RETURN novo_id;
 	END IF;
@@ -426,15 +426,50 @@ BEGIN
 END
 $$ language plpgsql;
 
+-----editar-----
+
+CREATE OR REPLACE FUNCTION editar_item_venda(
+	id_item_venda INTEGER,
+	novo_nome VARCHAR(50),
+	nova_descricao VARCHAR(50),
+	novo_preco FLOAT
+	
+)
+
+RETURNS INTEGER AS $$
+BEGIN
+	PERFORM * FROM maingigapizza_itemvenda
+	WHERE INITCAP(maingigapizza_itemvenda.nome) = INITCAP(novo_nome)
+	and maingigapizza_itemvenda.id != id_item_venda;
+	IF FOUND THEN 
+		RETURN 0;
+	ELSE
+	UPDATE maingigapizza_itemvenda
+	SET nome = novo_nome, descricao = nova_descricao, preco = novo_preco
+	WHERE id = id_item_venda;
+			RETURN 1;
+	END IF;
+	RETURN 0;
+END
+$$ language plpgsql;
+
+-----ativar-----
+
+CREATE OR REPLACE FUNCTION ativar_item_venda(id_item_venda INTEGER)
+RETURNS VOID AS $$
+BEGIN
+	UPDATE maingigapizza_itemvenda set is_ativo = true
+	WHERE maingigapizza_itemvenda.id = id_item_venda;
+END	
+$$ language plpgsql;
 
 
+-----inativar-----
 
-
-
-
-
-
-
-
-
-
+CREATE OR REPLACE FUNCTION inativar_item_venda(id_item_venda INTEGER)
+RETURNS VOID AS $$
+BEGIN
+	UPDATE maingigapizza_itemvenda set is_ativo = false
+	WHERE maingigapizza_itemvenda.id = id_item_venda;
+END	
+$$ language plpgsql;
