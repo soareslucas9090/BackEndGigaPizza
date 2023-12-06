@@ -517,7 +517,7 @@ def ativarItemVenda(request):
             id_item_venda = data.get('id_item_venda')
             
             if id_item_venda:
-                ativar_item_comprado(id_item_venda)
+                ativar_item_venda(id_item_venda)
                 return JsonResponse({'resultado': "ok"})
             else:
                 return JsonResponse({'erro': 'O campo "id_item_venda" é obrigatório.'}, status=400)
