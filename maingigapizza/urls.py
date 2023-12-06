@@ -25,10 +25,10 @@ urlpatterns = [
     path('listar_itens_comprados/', listarItensComprados, name='listar_itens_comprado'),
     path('listar_item_comprado/<int:pk>', listarItemComprado, name='listar_item_comprado'),
     ###### ITEM VENDA ######
-    path('criar_item_venda/', criarItemComprado, name='criar_item_venda'),
-    path('editar_item_venda/', editarItemComprado, name='editar_item_venda'),
-    path('inativar_item_venda/', inativarItemComprado, name='inativar_item_venda'),
-    path('ativar_item_venda/', ativarItemComprado, name='ativar_item_venda'),
-    path('listar_itens_vendas/', listarItensComprados, name='listar_itens_vendas'),
-    path('listar_item_venda/<int:pk>', listarItemComprado, name='listar_item_venda'),
+    path('criar_item_venda/', criarItemVenda, name='criar_item_venda'),
+    path('editar_item_venda/', editarItemVenda, name='editar_item_venda'),
+    path('inativar_item_venda/', inativarItemVenda, name='inativar_item_venda'),
+    path('ativar_item_venda/', ativarItemVenda, name='ativar_item_venda'),
+    path('listar_itens_vendas/', listarItensVenda, name='listar_itens_vendas'),
+    path('listar_item_venda/<int:pk>', listarItemVenda, name='listar_item_venda'),
 ]
