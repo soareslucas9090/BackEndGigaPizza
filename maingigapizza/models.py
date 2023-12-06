@@ -42,6 +42,7 @@ class ItemVenda(models.Model):
         ItemComprado,
         through='ItemCompradoVenda',
     )
+    is_ativo = models.BooleanField(default=True, null=False)
 
     def __str__(self):
         return f'{self.nome}'
