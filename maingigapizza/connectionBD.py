@@ -161,3 +161,58 @@ def listar_item_comprado(id_item_comprado):
         resultado = cursor.fetchall()
         cursor.close()
         return resultado
+
+
+###################     ITEM VENDA    ###################
+
+
+def criar_item_venda(nome_item_venda, descricao, preco, id_subcategoria):
+    with connection.cursor() as cursor:
+        # Aqui chamo a função criada no banco
+        cursor.execute("SELECT * from criar_item_venda(%s, %s, %s, %s)",[nome_item_venda, descricao,
+                                                                            preco, id_subcategoria])
+        resultado = cursor.fetchall()
+        # O resultado é um vetor dentro de um vetor, por isso o [0][0]
+        resultado = resultado[0][0]
+        cursor.close()
+        return resultado
+    
+def editar_item_venda(id_item_venda, nome, descricao, preco):
+    with connection.cursor() as cursor:
+        # Aqui chamo a função criada no banco
+        cursor.execute("SELECT * from editar_item_venda(%s, %s, %s, %s)",[id_item_venda, nome, descricao, preco])
+        resultado = cursor.fetchall()
+        # O resultado é um vetor dentro de um vetor, por isso o [0][0]
+        resultado = resultado[0][0]
+        cursor.close()
+        return resultado
+
+def inativar_item_venda(id_item_venda):
+    with connection.cursor() as cursor:
+        # Aqui chamo a função criada no banco
+        cursor.execute("SELECT * from inativar_item_venda(%s)",[id_item_venda])
+        cursor.fetchall()
+        cursor.close()
+
+def ativar_item_venda(id_item_venda):
+    with connection.cursor() as cursor:
+        # Aqui chamo a função criada no banco
+        cursor.execute("SELECT * from ativar_item_venda(%s)",[id_item_venda])
+        cursor.fetchall()
+        cursor.close()
+
+def listar_itens_venda():
+    with connection.cursor() as cursor:
+        # Aqui chamo a função criada no banco
+        cursor.execute("SELECT * from listar_itens_venda()")
+        resultado = cursor.fetchall()
+        cursor.close()
+        return resultado
+
+def listar_item_venda(id_item_venda):
+    with connection.cursor() as cursor:
+        # Aqui chamo a função criada no banco
+        cursor.execute("SELECT * from listar_item_venda(%s)",[id_item_venda])
+        resultado = cursor.fetchall()
+        cursor.close()
+        return resultado

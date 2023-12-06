@@ -20,8 +20,15 @@ urlpatterns = [
     ###### ITEM COMPRADO ######
     path('criar_item_comprado/', criarItemComprado, name='criar_item_comprado'),
     path('editar_item_comprado/', editarItemComprado, name='editar_item_comprado'),
-    path('inativar_item_comprado/', inativarItemComprado, name='inativar_Subcategoria'),
+    path('inativar_item_comprado/', inativarItemComprado, name='inativar_item_comprado'),
     path('ativar_item_comprado/', ativarItemComprado, name='ativar_item_comprado'),
     path('listar_itens_comprados/', listarItensComprados, name='listar_itens_comprado'),
     path('listar_item_comprado/<int:pk>', listarItemComprado, name='listar_item_comprado'),
+    ###### ITEM VENDA ######
+    path('criar_item_venda/', criarItemComprado, name='criar_item_venda'),
+    path('editar_item_venda/', editarItemComprado, name='editar_item_venda'),
+    path('inativar_item_venda/', inativarItemComprado, name='inativar_item_venda'),
+    path('ativar_item_venda/', ativarItemComprado, name='ativar_item_venda'),
+    path('listar_itens_vendas/', listarItensComprados, name='listar_itens_vendas'),
+    path('listar_item_venda/<int:pk>', listarItemComprado, name='listar_item_venda'),
 ]

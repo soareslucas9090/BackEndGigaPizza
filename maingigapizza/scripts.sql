@@ -473,3 +473,41 @@ BEGIN
 	WHERE maingigapizza_itemvenda.id = id_item_venda;
 END	
 $$ language plpgsql;
+
+----- Listar -----
+
+create or replace function listar_itens_venda()
+returns table(id bigint,nome varchar, descricao text, preco float, id_subcategoria bigint, is_ativo boolean) as
+$$
+begin
+	--retorna todos os items venda pesquisados
+	return query
+	select maingigapizza_itemvenda.id,
+		   maingigapizza_itemvenda.nome,
+		   maingigapizza_itemvenda.descricao,
+		   maingigapizza_itemvenda.preco,
+		   maingigapizza_itemvenda.subcategoria_id,
+		   maingigapizza_itemvenda.is_ativo 
+	from maingigapizza_itemvenda
+	order by maingigapizza_itemvenda.nome;
+end;
+$$ language plpgsql;
+
+----- Listar Específico -----
+
+create or replace function listar_item_venda(id_itemvenda integer)
+returns table(nome varchar, descricao text, preco float, id_subcategoria bigint, is_ativo boolean) as
+$$
+begin
+	--retorna o item venda pesquisado
+	return query
+	select
+		   maingigapizza_itemvenda.nome,
+		   maingigapizza_itemvenda.descricao,
+		   maingigapizza_itemvenda.preco,
+		   maingigapizza_itemvenda.subcategoria_id,
+		   maingigapizza_itemvenda.is_ativo 
+	from maingigapizza_itemvenda
+	where maingigapizza_itemvenda.id = id_itemvenda;
+end;
+$$ language plpgsql;
