@@ -496,12 +496,12 @@ $$ language plpgsql;
 ----- Listar Específico -----
 
 create or replace function listar_item_venda(id_itemvenda integer)
-returns table(nome varchar, descricao text, preco float, id_subcategoria bigint, is_ativo boolean) as
+returns table(id bigint, nome varchar, descricao text, preco float, id_subcategoria bigint, is_ativo boolean) as
 $$
 begin
 	--retorna o item venda pesquisado
 	return query
-	select
+	select maingigapizza_itemvenda.id,
 		   maingigapizza_itemvenda.nome,
 		   maingigapizza_itemvenda.descricao,
 		   maingigapizza_itemvenda.preco,

@@ -432,8 +432,8 @@ def criarItemVenda(request):
         try:
             data = json.loads(request.body)
             nome_item_venda = data.get('nome_item_venda')
-            descricao = data.get('descricao')
-            preco = data.get('preco')
+            descricao = data.get('descricao_item_venda')
+            preco = data.get('preco_item_venda')
             id_subcategoria = data.get('id_subcategoria')
 
             if nome_item_venda:
@@ -464,9 +464,9 @@ def editarItemVenda(request):
         try:
             data = json.loads(request.body)
             id_item_venda = data.get('id_item_venda')
-            nome = data.get('nome')
-            descricao = data.get('descricao')
-            preco = data.get('preco')
+            nome = data.get('nome_item_venda')
+            descricao = data.get('descricao_item_venda')
+            preco = data.get('preco_item_venda')
 
             if id_item_venda:
                 if nome:
