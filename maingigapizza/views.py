@@ -446,9 +446,9 @@ def criarItemVenda(request):
                         else:
                             return JsonResponse({'erro': 'O campo "id_subcategoria" é obrigatório.'}, status=400)
                     else:
-                        return JsonResponse({'erro': 'O campo "preco" é obrigatório.'}, status=400)
+                        return JsonResponse({'erro': 'O campo "preco_item_venda" é obrigatório.'}, status=400)
                 else:
-                    return JsonResponse({'erro': 'O campo "descricao" é obrigatório.'}, status=400)
+                    return JsonResponse({'erro': 'O campo "descricao_item_venda" é obrigatório.'}, status=400)
             else:
                 return JsonResponse({'erro': 'O campo "nome_item_venda" é obrigatório.'}, status=400)
         except json.JSONDecodeError:
@@ -475,11 +475,11 @@ def editarItemVenda(request):
                             resultado = editar_item_venda(id_item_venda, nome, descricao, preco)
                             return JsonResponse({'resultado': resultado})
                         else:
-                            return JsonResponse({'erro': 'O campo "preco" é obrigatório.'}, status=400)
+                            return JsonResponse({'erro': 'O campo "preco_item_venda" é obrigatório.'}, status=400)
                     else:
-                        return JsonResponse({'erro': 'O campo "descricao" é obrigatório.'}, status=400)
+                        return JsonResponse({'erro': 'O campo "descricao_item_venda" é obrigatório.'}, status=400)
                 else:
-                    return JsonResponse({'erro': 'O campo "nome" é obrigatório.'}, status=400)
+                    return JsonResponse({'erro': 'O campo "nome_item_venda" é obrigatório.'}, status=400)
             else:
                 return JsonResponse({'erro': 'O campo "id_item_venda" é obrigatório.'}, status=400)
         except json.JSONDecodeError:
