@@ -12,12 +12,10 @@ jmespath==1.0.1
 packaging==23.2
 pathspec==0.10.1
 psycopg2-binary==2.9.9
-pypiwin32==223
 pyscopg2==66.0.2
 python-dateutil==2.8.2
 python-decouple==3.8
 pytz==2023.3.post1
-pywin32==306
 PyYAML==6.0.1
 requests==2.31.0
 semantic-version==2.8.5
