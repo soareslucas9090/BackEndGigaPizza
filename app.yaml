@@ -1,4 +1,4 @@
-runtime: python38
+runtime: python310
 env: standard
 entrypoint: gunicorn -b :$PORT backendgigapizza.wsgi:application
 
