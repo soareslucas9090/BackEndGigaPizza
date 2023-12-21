@@ -1,0 +1,10 @@
+runtime: python38
+env: standard
+entrypoint: gunicorn -b :$PORT backendgigapizza.wsgi:application
+
+handlers:
+- url: /.*
+  script: auto
+
+runtime_config:
+  python_version: 3
