@@ -25,12 +25,9 @@ protobuf==4.25.1
 psycopg2-binary==2.9.9
 pyasn1==0.5.1
 pyasn1-modules==0.3.0
-pypiwin32==223
 pyscopg2==66.0.2
 python-dateutil==2.8.2
-python-decouple==3.8
 pytz==2023.3.post1
-pywin32==306
 PyYAML==6.0.1
 requests==2.31.0
 rsa==4.9

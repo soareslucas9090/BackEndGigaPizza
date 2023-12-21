@@ -1,8 +1,6 @@
 # .gcloudignore
 
 .gcloudignore
-
-# Ignore local .env file
 .env
 
 # If you would like to upload your .git directory, .gitignore file, or files
