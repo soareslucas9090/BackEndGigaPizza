@@ -11,10 +11,7 @@
 
 # Python pycache:
 __pycache__/
-
-# Ignore collected static and media files
-mediafiles/
-staticfiles/
+.mypy_cache
 
 # Ignore the local DB
 db.sqlite3
@@ -24,4 +21,5 @@ db.sqlite3
 venv/
 
 # Ignore IDE files
-.idea/
+idea/
+vscode/
