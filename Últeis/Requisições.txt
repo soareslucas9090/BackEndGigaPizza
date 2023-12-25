@@ -2,6 +2,7 @@ A API atualmente não conta com nenhuma medida de segurança e não exige autent
 O unico Header necessário na requisição é "Content-Type" com o valor "application/json"
 A URL do backend atualmente é: https://gigapizza.onrender.com
 A URL para a API do GigaPizza atualmente é: /api/maingigapizza
+O usuário ADMIN de id 2 é superuser, nunca tem a sessão fechada e tem todos os acessos. Use apenas para DEV
 
 Exemplo:
 https://gigapizza.onrender.com/api/maingigapizza/listar_categoria/1
@@ -9,32 +10,32 @@ https://gigapizza.onrender.com/api/maingigapizza/listar_categoria/1
 As rotas atualmente são:
 
 ##### CATEGORIRA #####
-cadastrar_categoria/ - pede "nome_categoria" e retorna "resultado", sendo este resultado o id da categoria cadastrada ou 0 se já houver uma categoria com este nome
-editar_categoria/ - pede "id_categoria" e "nome_categoria" e retorna "resultado", sendo este resultado 0 se a edição não foi possível (nome já existe) ou 1 se ocorreu com sucesso
+cadastrar_categoria/ - pede "nome_categoria" e "id_usuario_requisitante" e e retorna "resultado", sendo este resultado o id da categoria cadastrada ou 0 se já houver uma categoria com este nome
+editar_categoria/ - pede "id_categoria", "nome_categoria" e "id_usuario_requisitante" e retorna "resultado", sendo este resultado 0 se a edição não foi possível (nome já existe) ou 1 se ocorreu com sucesso
 inativar_categoria/ - pede "id_categoria" e retorna "resultado", sendo este resultado com o valor "OK"
 inativar_categoria/ - pede "id_categoria" e retorna "resultado", sendo este resultado com o valor "OK"
 listar_categorias/ - não pede body no json e retorna uma lista com as categorias cadastrada, ativas ou não
 listar_categoria/ID - pede o id da categoria na URL e retorna os dados da categoria ("id_categoria", "nome_categoria" e "is_active")
 
 ##### SUBCATEGORIRA #####
-cadastrar_subcategoria/ - pede "id_categoria" (categoria a qual pertence) e "nome_subcategoria" e retorna "resultado", sendo este resultado o id da subcategoria cadastrada ou 0 se já houver uma subcategoria com este nome
-editar_subcategoria/ - pede "id_subcategoria", "id_categoria" e "nome_categoria" e retorna "resultado", sendo este resultado 0 se a edição não foi possível (nome já existe) ou 1 se ocorreu com sucesso 
+cadastrar_subcategoria/ - pede "id_categoria" (categoria a qual pertence), "nome_subcategoria" e "id_usuario_requisitante" e retorna "resultado", sendo este resultado o id da subcategoria cadastrada ou 0 se já houver uma subcategoria com este nome
+editar_subcategoria/ - pede "id_subcategoria", "id_categoria", "nome_categoria" e "id_usuario_requisitante" e retorna "resultado", sendo este resultado 0 se a edição não foi possível (nome já existe) ou 1 se ocorreu com sucesso 
 inativar_subcategoria/ - pede "id_subcategoria" e retorna "resultado", sendo este resultado com o valor "OK"
 inativar_subcategoria/ - pede "id_subcategoria" e retorna "resultado", sendo este resultado com o valor "OK"
 listar_subcategorias/ - não pede body no json e retorna uma lista com as subcategorias cadastrada, ativas ou não
 listar_subcategoria/ID - pede o id da subcategoria na URL e retorna os dados da subcategoria ("id_subcategoria", "nome_subcategoria", "id_categoria" e "is_active")
 
 ##### ITEM COMPRADO #####
-criar_item_comprado/ - pede "nome_item_comprado", "preco_item_comprado", "quantidade_item_comprado" e "unidade_item_comprado" e retorna "resultado", sendo este resultado o id do item_comprado cadastrado ou 0 se já houver um item_comprado com este nome
-editar_item_comprado/ - pede "id_item_comprado", "nome_item_comprado", "preco_item_comprado", "quantidade_item_comprado" e "unidade_item_comprado" e retorna "resultado", sendo este resultado 0 se a edição não foi possível (nome já existe) ou 1 se ocorreu com sucesso 
+criar_item_comprado/ - pede "nome_item_comprado", "preco_item_comprado", "quantidade_item_comprado", "unidade_item_comprado" e "id_usuario_requisitante" e retorna "resultado", sendo este resultado o id do item_comprado cadastrado ou 0 se já houver um item_comprado com este nome
+editar_item_comprado/ - pede "id_item_comprado", "nome_item_comprado", "preco_item_comprado", "quantidade_item_comprado", "unidade_item_comprado" e "id_usuario_requisitante" e retorna "resultado", sendo este resultado 0 se a edição não foi possível (nome já existe) ou 1 se ocorreu com sucesso 
 inativar_item_comprado/ - pede "id_item_comprado" e retorna "resultado", sendo este resultado com o valor "OK"
 ativar_item_comprado/ - pede "id_item_comprado" e retorna "resultado", sendo este resultado com o valor "OK"
 listar_itens_comprados/ - não pede body no json e retorna uma lista com os itens_comprados cadastrados, ativos ou não
 listar_item_comprado/ID - pede o id do item_comprado na URL e retorna os dados do item_comprado ("id_item_comprado", "nome_item_comprado", "preco_item_comprado", "quantidade_item_comprado", "unidade_item_comprado" e "is_active")
 
 ##### ITEM VENDA #####
-criar_item_venda/ - pede "nome_item_venda", "descricao_item_venda", "preco_item_comprado", e "id_subcategoria" e retorna "resultado", sendo este resultado o id do item_venda cadastrado ou 0 se já houver um item_venda com este nome
-editar_item_venda/ - pede "id_item_venda", "nome_item_venda", "descricao_item_venda" e "preco_item_comprado" e retorna "resultado", sendo este resultado 0 se a edição não foi possível (nome já existe) ou 1 se ocorreu com sucesso 
+criar_item_venda/ - pede "nome_item_venda", "descricao_item_venda", "preco_item_comprado", "id_subcategoria" e "id_usuario_requisitante" e retorna "resultado", sendo este resultado o id do item_venda cadastrado ou 0 se já houver um item_venda com este nome
+editar_item_venda/ - pede "id_item_venda", "nome_item_venda", "descricao_item_venda", "preco_item_comprado" e "id_usuario_requisitante" e retorna "resultado", sendo este resultado 0 se a edição não foi possível (nome já existe) ou 1 se ocorreu com sucesso 
 inativar_item_venda/ - pede "id_item_venda" e retorna "resultado", sendo este resultado com o valor "OK"
 ativar_item_venda/ - pede "id_item_venda" e retorna "resultado", sendo este resultado com o valor "OK"
 listar_itens_venda/ - não pede body no json e retorna uma lista com os itens_comprados cadastrados, ativos ou não

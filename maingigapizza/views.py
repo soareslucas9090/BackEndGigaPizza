@@ -16,9 +16,10 @@ def cadastrarCategoria(request):
         try:
             data = json.loads(request.body)
             nome_categoria = data.get("nome_categoria")
+            id_usuario_requisitante = data.get("id_usuario_requisitante")
 
             if nome_categoria:
-                resultado = criar_categoria(nome_categoria)
+                resultado = criar_categoria(nome_categoria, id_usuario_requisitante)
                 return JsonResponse({"resultado": resultado})
             else:
                 return JsonResponse(
@@ -37,10 +38,13 @@ def editarCategoria(request):
             data = json.loads(request.body)
             id_categoria = data.get("id_categoria")
             nome_categoria = data.get("nome_categoria")
+            id_usuario_requisitante = data.get("id_usuario_requisitante")
 
             if id_categoria:
                 if nome_categoria:
-                    resultado = editar_categoria(id_categoria, nome_categoria)
+                    resultado = editar_categoria(
+                        id_categoria, nome_categoria, id_usuario_requisitante
+                    )
                     return JsonResponse({"resultado": resultado})
                 else:
                     return JsonResponse(
@@ -155,10 +159,13 @@ def cadastrarSubcategoria(request):
             data = json.loads(request.body)
             id_categoria = data.get("id_categoria")
             nome_subcategoria = data.get("nome_subcategoria")
+            id_usuario_requisitante = data.get("id_usuario_requisitante")
 
             if nome_subcategoria:
                 if id_categoria:
-                    resultado = criar_subcategoria(nome_subcategoria, id_categoria)
+                    resultado = criar_subcategoria(
+                        nome_subcategoria, id_categoria, id_usuario_requisitante
+                    )
                     return JsonResponse({"resultado": resultado})
                 else:
                     return JsonResponse(
@@ -182,12 +189,16 @@ def editarSubcategoria(request):
             id_subcategoria = data.get("id_subcategoria")
             id_categoria = data.get("id_categoria")
             nome_subcategoria = data.get("nome_subcategoria")
+            id_usuario_requisitante = data.get("id_usuario_requisitante")
 
             if id_subcategoria:
                 if nome_subcategoria:
                     if id_categoria:
                         resultado = editar_subcategoria(
-                            id_subcategoria, id_categoria, nome_subcategoria
+                            id_subcategoria,
+                            id_categoria,
+                            nome_subcategoria,
+                            id_usuario_requisitante,
                         )
                         return JsonResponse({"resultado": resultado})
                     else:
@@ -315,6 +326,7 @@ def criarItemComprado(request):
             preco_item_comprado = data.get("preco_item_comprado")
             quantidade_item_comprado = data.get("quantidade_item_comprado")
             unidade_item_comprado = data.get("unidade_item_comprado")
+            id_usuario_requisitante = data.get("id_usuario_requisitante")
 
             if nome_item_comprado:
                 if preco_item_comprado:
@@ -325,6 +337,7 @@ def criarItemComprado(request):
                                 preco_item_comprado,
                                 quantidade_item_comprado,
                                 unidade_item_comprado,
+                                id_usuario_requisitante,
                             )
                             return JsonResponse({"resultado": resultado})
                         else:
@@ -369,6 +382,7 @@ def editarItemComprado(request):
             preco = data.get("preco_item_comprado")
             quantidade = data.get("quantidade_item_comprado")
             unidade = data.get("unidade_item_comprado")
+            id_usuario_requisitante = data.get("id_usuario_requisitante")
 
             if item_comprado_id:
                 if nome:
@@ -376,7 +390,12 @@ def editarItemComprado(request):
                         if quantidade:
                             if unidade:
                                 resultado = editar_item_comprado(
-                                    item_comprado_id, nome, preco, quantidade, unidade
+                                    item_comprado_id,
+                                    nome,
+                                    preco,
+                                    quantidade,
+                                    unidade,
+                                    id_usuario_requisitante,
                                 )
                                 return JsonResponse({"resultado": resultado})
                             else:
@@ -533,13 +552,18 @@ def criarItemVenda(request):
             descricao = data.get("descricao_item_venda")
             preco = data.get("preco_item_venda")
             id_subcategoria = data.get("id_subcategoria")
+            id_usuario_requisitante = data.get("id_usuario_requisitante")
 
             if nome_item_venda:
                 if descricao:
                     if preco:
                         if id_subcategoria:
                             resultado = criar_item_venda(
-                                nome_item_venda, descricao, preco, id_subcategoria
+                                nome_item_venda,
+                                descricao,
+                                preco,
+                                id_subcategoria,
+                                id_usuario_requisitante,
                             )
                             return JsonResponse({"resultado": resultado})
                         else:
@@ -579,13 +603,18 @@ def editarItemVenda(request):
             nome = data.get("nome_item_venda")
             descricao = data.get("descricao_item_venda")
             preco = data.get("preco_item_venda")
+            id_usuario_requisitante = data.get("id_usuario_requisitante")
 
             if id_item_venda:
                 if nome:
                     if descricao:
                         if preco:
                             resultado = editar_item_venda(
-                                id_item_venda, nome, descricao, preco
+                                id_item_venda,
+                                nome,
+                                descricao,
+                                preco,
+                                id_usuario_requisitante,
                             )
                             return JsonResponse({"resultado": resultado})
                         else:

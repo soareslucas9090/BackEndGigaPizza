@@ -1,3 +1,137 @@
+----------------------FUNÇÕES PARA LOGIN----------------------
+----------------------FUNÇÕES PARA LOGIN----------------------
+----------------------FUNÇÕES PARA LOGIN----------------------
+CREATE OR REPLACE FUNCTION criar_sessao(id_usuario integer)
+RETURNS INTEGER AS $$
+declare
+	id_sessao integer;
+BEGIN
+    insert into maingigapizza_sessao (is_ativo, ultima_interacao, usuario_id)
+    values (true, now(), id_usuario);
+   
+    select max(id) into id_sessao from maingigapizza_sessao.id
+    where maingigapizza_sessao.usuario_id = id_usuario;
+  
+	return id_sessao;
+end;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION renovar_sessao(id_usuario integer)
+RETURNS VOID AS $$
+BEGIN
+    UPDATE maingigapizza_sessao
+    SET ultima_interacao = NOW()
+    WHERE is_ativo = True AND usuario_id = id_usuario;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION atualizar_sessoes()
+RETURNS VOID AS $$
+BEGIN
+    UPDATE maingigapizza_sessao
+    SET is_ativo = False
+    WHERE is_ativo = True AND ultima_interacao < NOW() - INTERVAL '10 minutes'
+    and usuario_id != 2;
+END;
+$$ LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION fazer_login(login varchar, senha_login varchar)
+RETURNS TABLE (
+    id bigint,
+    nome varchar,
+    cpf varchar,
+    telefone varchar,
+    endereco varchar,
+    email varchar,
+    tipo varchar,
+    sessao integer
+) AS
+$$
+DECLARE 
+    usuario record;
+    sessao integer;
+BEGIN
+    -- Apenas mudar o where se quiser alterar o parametro de login
+    SELECT * INTO usuario FROM maingigapizza_usuario
+    WHERE (maingigapizza_usuario.cpf = login AND 
+           maingigapizza_usuario.senha = senha_login) OR 
+          (maingigapizza_usuario.email = login AND 
+           maingigapizza_usuario.senha = senha_login);
+    
+    -- Retorna todas as colunas, menos a "SENHA"
+    IF FOUND THEN
+        IF usuario.is_ativo THEN
+            SELECT criar_sessao INTO sessao FROM criar_sessao(usuario.id);
+
+			PERFORM * FROM atualizar_sessoes
+
+            
+            IF EXISTS (SELECT 1 FROM pg_tables WHERE tablename = 'temp_retorno') THEN
+                EXECUTE 'DROP TABLE temp_retorno';
+            END IF;
+            -- Insere os dados na tabela temporária
+            CREATE TEMP TABLE temp_retorno ON COMMIT DROP AS
+                SELECT
+                    usuario.id,
+                    usuario.nome,
+                    usuario.cpf,
+                    usuario.telefone,
+                    usuario.endereco,
+                    usuario.email,
+                    usuario.tipo,
+                    sessao;
+            
+            -- Retorna os dados da tabela temporária
+            RETURN QUERY SELECT * FROM temp_retorno;
+        ELSE
+            -- Caso o usuário tenha sido encontrado, mas não está ativo, retorna 0
+            RETURN QUERY SELECT 0::bigint, 'user inativo'::varchar,
+           null::varchar, null::varchar, null::varchar, null::varchar, null::varchar,
+           null::integer;
+        END IF;
+    ELSE
+        -- Caso o usuário não tenha sido encontrado, retorna -1 e 'nao encontrado'
+        RETURN QUERY SELECT -1::bigint, 'nao encontrado'::varchar,
+           null::varchar, null::varchar, null::varchar, null::varchar, null::varchar,
+           null::integer;
+    END IF;
+
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION fazer_logout(id_usuario integer)
+RETURNS VOID AS $$
+begin
+	if id_usuario != 2 then
+    	UPDATE maingigapizza_sessao
+    	SET ultima_interacao = NOW(), is_ativo = False
+    	WHERE usuario_id = id_usuario;
+    end if;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION verificar_sessao_ativa(id_usuario integer)
+RETURNS integer AS $$
+begin
+	-- Atualiza as seções
+	perform * from atualizar_sessoes();
+	-- Procura se há alguma sessao ativa
+    perform * from maingigapizza_sessao
+    where usuario_id = id_usuario
+    and is_ativo = true;
+   
+    IF FOUND THEN
+		return 1;
+	else
+		return 0;
+	end if;
+	
+END;
+$$ LANGUAGE plpgsql;
+
+
+
 
 ----------------------FUNÇÕES PARA CATEGORIA----------------------
 ----------------------FUNÇÕES PARA CATEGORIA----------------------
@@ -5,58 +139,74 @@
 
 -----Criar-----
 
-CREATE OR REPLACE FUNCTION criar_categoria(nome_categoria varchar)
+CREATE OR REPLACE FUNCTION criar_categoria(nome_categoria varchar, id_usuario_requisitante integer)
 RETURNS integer AS
 $$
 declare
 	id_insercao integer;
+	sessao_ativa integer;
 begin 
-	--Verifica se há uma categoria com o mesmo nome
-	PERFORM * FROM maingigapizza_categoria
-	WHERE INITCAP(maingigapizza_categoria.nome) = INITCAP(nome_categoria);
-	--se encontrar retorna 0
-	IF FOUND THEN
-		return 0;
-	else
-		select coalesce(max(maingigapizza_categoria.id),0) + 1 from maingigapizza_categoria into id_insercao;
+	select verificar_sessao_ativa into sessao_ativa from verificar_sessao_ativa(id_usuario_requisitante);
 	
-		insert into maingigapizza_categoria values
-		(id_insercao, INITCAP(nome_categoria), true);
-												
-		RETURN id_insercao;
-	END IF;
-	RETURN 0;
+	if sessao_ativa = 1 then
+		--Verifica se há uma categoria com o mesmo nome
+		PERFORM * FROM maingigapizza_categoria
+		WHERE INITCAP(maingigapizza_categoria.nome) = INITCAP(nome_categoria);
+		--se encontrar retorna 0
+		IF FOUND THEN
+			return 0;
+		else
+			select coalesce(max(maingigapizza_categoria.id),0) + 1 from maingigapizza_categoria into id_insercao;
+		
+			insert into maingigapizza_categoria values
+			(id_insercao, INITCAP(nome_categoria), true);
+													
+			RETURN id_insercao;
+		END IF;
+		RETURN 0;
+	else
+		return -5;
+	end if;
 
 	--Legenda:
 	--Retorna o id da nova categoria se a inserção for válida e única
 	--Retorna '0' se a categoria a ser inserida já existe
+	--Retorna -5 se nao há sessao ativa
 END;
 $$ LANGUAGE plpgsql;
 
 -----Editar-----
 
-CREATE OR REPLACE FUNCTION editar_categoria(id_categoria integer, nome_categoria varchar)
+CREATE OR REPLACE FUNCTION editar_categoria(id_categoria integer, nome_categoria varchar, id_usuario_requisitante integer)
 RETURNS integer AS
 $$
 declare
+	sessao_ativa integer;
 begin 
-	--Verifica se há uma categoria com o mesmo nome
-	PERFORM * FROM maingigapizza_categoria
-	WHERE INITCAP(maingigapizza_categoria.nome) = INITCAP(nome_categoria);
-	--se encontrar é retornado 0
-	IF FOUND THEN
-		return 0;
+	select verificar_sessao_ativa into sessao_ativa from verificar_sessao_ativa(id_usuario_requisitante);
+	
+	if sessao_ativa = 1 then
+		--Verifica se há uma categoria com o mesmo nome
+		PERFORM * FROM maingigapizza_categoria
+		WHERE INITCAP(maingigapizza_categoria.nome) = INITCAP(nome_categoria);
+		--se encontrar é retornado 0
+		IF FOUND THEN
+			return 0;
+		else
+			update maingigapizza_categoria set nome = INITCAP(nome_categoria)
+			where maingigapizza_categoria.id = id_categoria;
+													
+			RETURN 1;
+		END IF;
+		RETURN 0;
 	else
-		update maingigapizza_categoria set nome = INITCAP(nome_categoria)
-		where maingigapizza_categoria.id = id_categoria;
-												
-		RETURN 1;
-	END IF;
-	RETURN 0;
+		return -5;
+	end if;
 
 	--Legenda:
 	--Retorna '1' se a edição for válida e única
 	--Retorna '0' se o nome a ser inserido já existe
+	--Retorna -5 se nao há sessao ativa
 END;
 $$ LANGUAGE plpgsql;
 
@@ -129,60 +279,76 @@ $$ LANGUAGE plpgsql;
 
 -----Criar-----
 
-CREATE OR REPLACE FUNCTION criar_subcategoria(nome_subcategoria varchar, id_categoria integer)
+CREATE OR REPLACE FUNCTION criar_subcategoria(nome_subcategoria varchar, id_categoria integer, id_usuario_requisitante integer)
 RETURNS integer AS
 $$
 declare
 	id_insercao integer;
+	sessao_ativa integer;
 begin 
-	--Verifica se há uma subcategoria com o mesmo nome e mesma categoria
-	PERFORM * FROM maingigapizza_subcategoria
-	WHERE INITCAP(maingigapizza_subcategoria.nome) = INITCAP(nome_subcategoria) and 
-	maingigapizza_subcategoria.categoria_id = id_categoria;
-	--se encontrar retorna 0
-	IF FOUND THEN
-		return 0;
-	else
-		select coalesce(max(maingigapizza_subcategoria.id),0) + 1 from maingigapizza_subcategoria into id_insercao;
+	select verificar_sessao_ativa into sessao_ativa from verificar_sessao_ativa(id_usuario_requisitante);
 	
-		insert into maingigapizza_subcategoria values
-		(id_insercao, INITCAP(nome_subcategoria), true, id_categoria);
-												
-		RETURN id_insercao;
-	END IF;
-	RETURN 0;
+	if sessao_ativa = 1 then
+		--Verifica se há uma subcategoria com o mesmo nome e mesma categoria
+		PERFORM * FROM maingigapizza_subcategoria
+		WHERE INITCAP(maingigapizza_subcategoria.nome) = INITCAP(nome_subcategoria) and 
+		maingigapizza_subcategoria.categoria_id = id_categoria;
+		--se encontrar retorna 0
+		IF FOUND THEN
+			return 0;
+		else
+			select coalesce(max(maingigapizza_subcategoria.id),0) + 1 from maingigapizza_subcategoria into id_insercao;
+		
+			insert into maingigapizza_subcategoria values
+			(id_insercao, INITCAP(nome_subcategoria), true, id_categoria);
+													
+			RETURN id_insercao;
+		END IF;
+		RETURN 0;
+	else
+		return -5;
+	end if;
 
 	--Legenda:
 	--Retorna o id da nova subcategoria se a inserção for válida e única
 	--Retorna '0' se a subcategoria a ser inserida já existe na categoria
+	--Retorna -5 se nao há sessao ativa
 END;
 $$ LANGUAGE plpgsql;
 
 -----Editar-----
 
-CREATE OR REPLACE FUNCTION editar_subcategoria(id_subcategoria integer, id_categoria integer, nome_subcategoria varchar)
+CREATE OR REPLACE FUNCTION editar_subcategoria(id_subcategoria integer, id_categoria integer, nome_subcategoria varchar, id_usuario_requisitante integer)
 RETURNS integer AS
 $$
 declare
+	sessao_ativa integer;
 begin 
-	--Verifica se há uma subcategoria com o mesmo nome e mesma categoria
-	PERFORM * FROM maingigapizza_subcategoria
-	WHERE INITCAP(maingigapizza_subcategoria.nome) = INITCAP(nome_subcategoria) and 
-				maingigapizza_subcategoria.categoria_id = id_categoria;
-	--se encontrar é retornado 0
-	IF FOUND THEN
-		return 0;
+	select verificar_sessao_ativa into sessao_ativa from verificar_sessao_ativa(id_usuario_requisitante);
+	
+	if sessao_ativa = 1 then
+		--Verifica se há uma subcategoria com o mesmo nome e mesma categoria
+		PERFORM * FROM maingigapizza_subcategoria
+		WHERE INITCAP(maingigapizza_subcategoria.nome) = INITCAP(nome_subcategoria) and 
+					maingigapizza_subcategoria.categoria_id = id_categoria;
+		--se encontrar é retornado 0
+		IF FOUND THEN
+			return 0;
+		else
+			update maingigapizza_subcategoria set nome = INITCAP(nome_subcategoria)
+			where maingigapizza_subcategoria.id = id_subcategoria;
+													
+			RETURN 1;
+		END IF;
+		RETURN 0;
 	else
-		update maingigapizza_subcategoria set nome = INITCAP(nome_subcategoria)
-		where maingigapizza_subcategoria.id = id_subcategoria;
-												
-		RETURN 1;
-	END IF;
-	RETURN 0;
+		return -5;
+	end if;
 
 	--Legenda:
 	--Retorna '1' se a edição for válida e única
 	--Retorna '0' se o nome a ser inserido já existe
+	--Retorna -5 se nao há sessao ativa
 END;
 $$ LANGUAGE plpgsql;
 
@@ -261,32 +427,41 @@ create or replace function criar_item_comprado(
     nome_item VARCHAR,
     preco float,
     quantidade float,
-    unidade VARCHAR
+    unidade VARCHAR,
+    id_usuario_requisitante integer
 )
 RETURNS INTEGER AS $$
 DECLARE
     novo_id INTEGER;
-BEGIN
-	--Verifica se há um item comprado com o mesmo nome
+	sessao_ativa integer;
+begin 
+	select verificar_sessao_ativa into sessao_ativa from verificar_sessao_ativa(id_usuario_requisitante);
 	
-	PERFORM * FROM maingigapizza_itemcomprado
-	WHERE INITCAP(maingigapizza_itemcomprado.nome) = INITCAP(nome_item);
-	--se encontrar retorna 0
-	IF FOUND THEN
-		return 0;
-	else
-		select coalesce(max(maingigapizza_itemcomprado.id),0) + 1 from maingigapizza_itemcomprado into novo_id;
-
-    	INSERT INTO maingigapizza_itemcomprado (id,nome,is_ativo, preco, quantidade, unidade)
-    	VALUES (novo_id,nome_item, true, preco, quantidade, unidade);
-    
-    	return novo_id;
+	if sessao_ativa = 1 then
+		--Verifica se há um item comprado com o mesmo nome
+		
+		PERFORM * FROM maingigapizza_itemcomprado
+		WHERE INITCAP(maingigapizza_itemcomprado.nome) = INITCAP(nome_item);
+		--se encontrar retorna 0
+		IF FOUND THEN
+			return 0;
+		else
+			select coalesce(max(maingigapizza_itemcomprado.id),0) + 1 from maingigapizza_itemcomprado into novo_id;
+	
+	    	INSERT INTO maingigapizza_itemcomprado (id,nome,is_ativo, preco, quantidade, unidade)
+	    	VALUES (novo_id,nome_item, true, preco, quantidade, unidade);
+	    
+	    	return novo_id;
 		end if;
 		return 0;
+	else
+		return -5;
+	end if;
 
 		--Legenda:
 		--Retorna o id do novo item comprado se a inserção for válida e única
 		--Retorna '0' se o item comprado a ser inserido já existe
+		--Retorna -5 se nao há sessao ativa
 END;
 $$ LANGUAGE plpgsql;
 
@@ -298,28 +473,37 @@ create or replace function editar_item_comprado(
     novo_nome VARCHAR,
     novo_preco float,
     nova_quantidade float,
-    nova_unidade VARCHAR
+    nova_unidade VARCHAR,
+    id_usuario_requisitante integer
 )
 RETURNS integer AS $$
-BEGIN
-
-	--Verifica se há um Item comprado com o mesmo nome
-	PERFORM * FROM maingigapizza_itemcomprado
-	WHERE INITCAP(maingigapizza_itemcomprado.nome) = INITCAP(novo_nome)
-	and maingigapizza_itemcomprado.id != item_comprado_id;
-	--se encontrar é retornado 0
-	IF FOUND THEN
-		return 0;
+DECLARE
+	sessao_ativa integer;
+begin 
+	select verificar_sessao_ativa into sessao_ativa from verificar_sessao_ativa(id_usuario_requisitante);
+	
+	if sessao_ativa = 1 then
+		--Verifica se há um Item comprado com o mesmo nome
+		PERFORM * FROM maingigapizza_itemcomprado
+		WHERE INITCAP(maingigapizza_itemcomprado.nome) = INITCAP(novo_nome)
+		and maingigapizza_itemcomprado.id != item_comprado_id;
+		--se encontrar é retornado 0
+		IF FOUND THEN
+			return 0;
+		else
+	    	UPDATE maingigapizza_itemcomprado
+	    	SET nome = novo_nome, preco = novo_preco, quantidade = nova_quantidade, unidade = nova_unidade
+	    	WHERE id = item_comprado_id;
+			RETURN 1;
+		--Legenda:
+		--Retorna '1' se a edição for válida e única
+		--Retorna '0' se o nome a ser inserido já existe
+		--Retorna -5 se nao há sessao ativa
+		END IF;
+		RETURN 0;
 	else
-    	UPDATE maingigapizza_itemcomprado
-    	SET nome = novo_nome, preco = novo_preco, quantidade = nova_quantidade, unidade = nova_unidade
-    	WHERE id = item_comprado_id;
-		RETURN 1;
-	--Legenda:
-	--Retorna '1' se a edição for válida e única
-	--Retorna '0' se o nome a ser inserido já existe
-	END IF;
-	RETURN 0;
+		return -5;
+	end if;
 END;
 $$ LANGUAGE plpgsql;
 
@@ -396,32 +580,41 @@ CREATE OR REPLACE FUNCTION criar_item_venda(
 	nome_item VARCHAR,
 	descricao VARCHAR,
 	preco FLOAT,
-	subcategoria_id integer
+	subcategoria_id integer,
+    id_usuario_requisitante integer
 )
 
 RETURNS INTEGER AS $$
 DECLARE
 	novo_id integer;
-BEGIN
-	PERFORM * FROM maingigapizza_itemvenda
-	WHERE INITCAP(maingigapizza_itemvenda.nome) = INITCAP(nome_item);
-	--se encontar retorna 0
+	sessao_ativa integer;
+begin 
+	select verificar_sessao_ativa into sessao_ativa from verificar_sessao_ativa(id_usuario_requisitante);
 	
-	IF FOUND THEN
-		return 0;
+	if sessao_ativa = 1 then
+		PERFORM * FROM maingigapizza_itemvenda
+		WHERE INITCAP(maingigapizza_itemvenda.nome) = INITCAP(nome_item);
+		--se encontar retorna 0
 		
-	ELSE
-		SELECT coalesce(max(maingigapizza_itemvenda.id),0) +1 FROM maingigapizza_itemvenda into novo_id;
+		IF FOUND THEN
+			return 0;
+			
+		ELSE
+			SELECT coalesce(max(maingigapizza_itemvenda.id),0) +1 FROM maingigapizza_itemvenda into novo_id;
+			
+		INSERT INTO maingigapizza_itemvenda (id, nome, descricao, preco, subcategoria_id, is_ativo)
+		VALUES (novo_id, nome_item, descricao, preco, subcategoria_id,true);
 		
-	INSERT INTO maingigapizza_itemvenda (id, nome, descricao, preco, subcategoria_id, is_ativo)
-	VALUES (novo_id, nome_item, descricao, preco, subcategoria_id,true);
-	
-	RETURN novo_id;
-	END IF;
-	RETURN 0;
+		RETURN novo_id;
+		END IF;
+		RETURN 0;
+	else
+		return -5;
+	end if;
 		--Legenda:
 		--Retorna o id do novo item venda se a inserção for válida e única
 		--Retorna '0' se o novo item venda a ser inserido já existe
+		--Retorna -5 se nao há sessao ativa
 
 END
 $$ language plpgsql;
@@ -432,24 +625,33 @@ CREATE OR REPLACE FUNCTION editar_item_venda(
 	id_item_venda INTEGER,
 	novo_nome VARCHAR(50),
 	nova_descricao VARCHAR(50),
-	novo_preco FLOAT
-	
+	novo_preco FLOAT,
+	id_usuario_requisitante integer
 )
 
 RETURNS INTEGER AS $$
-BEGIN
-	PERFORM * FROM maingigapizza_itemvenda
-	WHERE INITCAP(maingigapizza_itemvenda.nome) = INITCAP(novo_nome)
-	and maingigapizza_itemvenda.id != id_item_venda;
-	IF FOUND THEN 
+DECLARE
+	sessao_ativa integer;
+begin 
+	select verificar_sessao_ativa into sessao_ativa from verificar_sessao_ativa(id_usuario_requisitante);
+	
+	if sessao_ativa = 1 then
+		PERFORM * FROM maingigapizza_itemvenda
+		WHERE INITCAP(maingigapizza_itemvenda.nome) = INITCAP(novo_nome)
+		and maingigapizza_itemvenda.id != id_item_venda;
+		IF FOUND THEN 
+			RETURN 0;
+		ELSE
+		UPDATE maingigapizza_itemvenda
+		SET nome = novo_nome, descricao = nova_descricao, preco = novo_preco
+		WHERE id = id_item_venda;
+				RETURN 1;
+		END IF;
 		RETURN 0;
-	ELSE
-	UPDATE maingigapizza_itemvenda
-	SET nome = novo_nome, descricao = nova_descricao, preco = novo_preco
-	WHERE id = id_item_venda;
-			RETURN 1;
-	END IF;
-	RETURN 0;
+	else
+		return -5;
+	end if;
+	--Retorna -5 se nao há sessao ativa
 END
 $$ language plpgsql;
 
