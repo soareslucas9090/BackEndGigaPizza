@@ -122,6 +122,7 @@ begin
     and is_ativo = true;
    
     IF FOUND THEN
+		perform * from renovar_sessao(id_usuario);
 		return 1;
 	else
 		return 0;
