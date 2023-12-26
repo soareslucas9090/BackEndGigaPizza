@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.db import models
 
 
@@ -105,3 +107,35 @@ class Sessao(models.Model):
     usuario = models.ForeignKey(Usuario, on_delete=models.RESTRICT)
     is_ativo = models.BooleanField(default=True)
     ultima_interacao = models.DateTimeField()
+
+
+class Pedido(models.Model):
+    horaSolicitacao = models.DateTimeField(null=False, default=datetime.now())
+    horaEntrega = models.DateTimeField()
+    dataPedido = models.DateTimeField(null=False, default=datetime.now())
+    descricao = models.CharField(max_length=512, null=False)
+    isFinalizado = models.BooleanField(default=False)
+
+
+class ItemPedido(models.Model):
+    item_venda = models.ForeignKey(
+        ItemVenda,
+        on_delete=models.RESTRICT,
+    )
+    pedido = models.ForeignKey(
+        Pedido,
+        on_delete=models.RESTRICT,
+    )
+    valor = models.FloatField(null=False)
+    quantidade = models.IntegerField(null=False)
+
+
+class PizzaPedido(models.Model):
+    pizza = models.ForeignKey(
+        Pizza,
+        on_delete=models.RESTRICT,
+    )
+    pedido = models.ForeignKey(
+        Pedido,
+        on_delete=models.RESTRICT,
+    )
