@@ -714,3 +714,133 @@ begin
 	where maingigapizza_itemvenda.id = id_itemvenda;
 end;
 $$ language plpgsql;
+
+----------------------FUNÇÕES PARA PEDIDO----------------------
+----------------------FUNÇÕES PARA PEDIDO----------------------
+----------------------FUNÇÕES PARA PEDIDO----------------------
+
+
+----Criar-----
+
+CREATE OR REPLACE FUNCTION criar_pedido(
+	hora_solicitacao TIME,
+	hora_entrega TIME,
+	data_pedido DATE,
+	descricao_pedido VARCHAR
+)
+
+RETURNS INTEGER AS $$
+DECLARE
+	novo_id integer;
+	sessao_ativa integer;
+begin 
+	select verificar_sessao_ativa into sessao_ativa from verificar_sessao_ativa(id_usuario_requisitante);
+	
+	if sessao_ativa = 1 then
+		SELECT coalesce(max(maingigapizza_pedido.id),0) +1 FROM maingigapizza_pedido into novo_id;
+			
+		INSERT INTO maingigapizza_pedido (id, horaSolicitacao, horaEntrega, dataPedido, descricao, isFinalizado)
+		VALUES (novo_id, hora_solicitacao, hora_entrega, data_pedido, descricao_pedido,false);
+		
+		RETURN novo_id;
+	else
+		return -5;
+	end if;
+		--Legenda:
+		--Retorna o id do novo pedido se a inserção for válida
+		--Retorna -5 se nao há sessao ativa
+
+END
+$$ language plpgsql;
+
+-----editar-----
+
+CREATE OR REPLACE FUNCTION editar_pedido(
+	id_pedido INTEGER,
+	nova_hora_solicitacao TIME,
+	nova_hora_entrega TIME,
+	nova_data_pedido DATE,
+	nova_descricao_pedido VARCHAR,
+	id_usuario_requisitante integer
+)
+
+RETURNS INTEGER AS $$
+DECLARE
+	sessao_ativa integer;
+begin 
+	select verificar_sessao_ativa into sessao_ativa from verificar_sessao_ativa(id_usuario_requisitante);
+	
+	if sessao_ativa = 1 then
+		UPDATE maingigapizza_pedido
+		SET horaSolicitacao = nova_hora_solicitacao, 
+		horaEntrega = nova_hora_entrega, 
+		dataPedido = nova_data_pedido, 
+		descricao = nova_descricao_pedido
+		WHERE id = id_item_venda;
+				RETURN 1;
+	else
+		return -5;
+	end if;
+	--Legenda:
+	--Retorna 1 se o update for realizado com sucesso
+	--Retorna -5 se nao há sessao ativa
+END
+$$ language plpgsql;
+
+-----finalizar-----
+
+CREATE OR REPLACE FUNCTION finalizar_pedido(id_pedido INTEGER)
+RETURNS VOID AS $$
+BEGIN
+	UPDATE maingigapizza_pedido set isFinalizado = true
+	WHERE maingigapizza_pedido.id = id_pedido;
+END	
+$$ language plpgsql;
+
+----- Listar -----
+
+create or replace function listar_pedidos()
+returns table(id bigint,
+		hora_solicitacao time, 
+		hora_entrega time, 
+		data_pedido date, 
+		descricao text, 
+		isFinalizado bool) as
+$$
+begin
+	--retorna todos os pedidos salvos por data
+	return query
+	select maingigapizza_pedido.id,
+		   maingigapizza_pedido.horaSolicitacao,
+		   maingigapizza_pedido.horaEntrega,
+		   maingigapizza_pedido.dataPedido,
+		   maingigapizza_pedido.descricao,
+		   maingigapizza_pedido.isFinalizado 
+	from maingigapizza_pedido
+	order by maingigapizza_pedido.dataPedido;
+end;
+$$ language plpgsql;
+
+----- Listar Específico -----
+
+create or replace function listar_pedido(id_pedido integer)
+returns table(id bigint,
+		hora_solicitacao time, 
+		hora_entrega time, 
+		data_pedido date, 
+		descricao text, 
+		isFinalizado bool) as
+$$
+begin
+	--retorna o pedido pesquisado
+	return query
+	select maingigapizza_pedido.id,
+		   maingigapizza_pedido.horaSolicitacao,
+		   maingigapizza_pedido.horaEntrega,
+		   maingigapizza_pedido.dataPedido,
+		   maingigapizza_pedido.descricao,
+		   maingigapizza_pedido.isFinalizado
+	from maingigapizza_pedido
+	where maingigapizza_pedido.id = id_pedido;
+end;
+$$ language plpgsql;
