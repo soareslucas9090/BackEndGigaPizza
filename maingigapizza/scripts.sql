@@ -722,10 +722,10 @@ $$ language plpgsql;
 
 ----Criar-----
 CREATE OR REPLACE FUNCTION criar_pedido(
-	hora_solicitacao timestamp,
 	hora_entrega timestamp,
-	data_pedido timestamp,
-	descricao_pedido VARCHAR
+	descricao_pedido VARCHAR,
+	id_usuario_requisitante integer,
+	id_usuario_pedido integer
 )
 
 RETURNS INTEGER AS $$
@@ -738,8 +738,8 @@ begin
 	if sessao_ativa = 1 then
 		SELECT coalesce(max(maingigapizza_pedido.id),0) +1 FROM maingigapizza_pedido into novo_id;
 			
-		INSERT INTO maingigapizza_pedido (id, "horaSolicitacao", "horaEntrega", "dataPedido", descricao, "isFinalizado")
-		VALUES (novo_id, hora_solicitacao, hora_entrega, data_pedido, descricao_pedido,false);
+		INSERT INTO maingigapizza_pedido (id, "horaEntrega",descricao, "isFinalizado", "datahoraSolicitacao", "id_usuario_pedido_id")
+		VALUES (novo_id, hora_entrega, descricao_pedido,false, now(), id_usuario_pedido);
 		
 		RETURN novo_id;
 	else
@@ -757,9 +757,7 @@ $$ language plpgsql;
 
 CREATE OR REPLACE FUNCTION editar_pedido(
 	id_pedido INTEGER,
-	hora_solicitacao timestamp,
 	hora_entrega timestamp,
-	data_pedido timestamp,
 	nova_descricao_pedido VARCHAR,
 	id_usuario_requisitante integer
 )
@@ -772,9 +770,7 @@ begin
 	
 	if sessao_ativa = 1 then
 		UPDATE maingigapizza_pedido
-		SET "horaSolicitacao" = nova_hora_solicitacao, 
-		"horaEntrega"= nova_hora_entrega, 
-		"dataPedido" = nova_data_pedido, 
+		set "horaEntrega"= nova_hora_entrega,
 		"descricao" = nova_descricao_pedido
 		WHERE id = id_item_venda;
 		
@@ -787,6 +783,7 @@ begin
 	--Retorna -5 se nao há sessao ativa
 END
 $$ language plpgsql;
+
 
 -----finalizar-----
 
@@ -801,35 +798,20 @@ $$ language plpgsql;
 ----- Listar -----
 
 CREATE OR REPLACE FUNCTION listar_pedido()
-RETURNS TABLE (id BIGINT, horasolicitacao timestamp,horaentrega timestamp, datapedido timestamp, descricao varchar, finalizado boolean,
-nome_itemvenda varchar, preco_itemvenda float, nome_pizza varchar, tamanho_pizza integer, preco_pizza FLOAT, nome_itemvendapizza varchar) AS $$
+RETURNS TABLE (id BIGINT, horaentrega timestamp, descricao varchar, finalizado boolean, datahorasolicitacao timestamp) AS $$
 
 BEGIN
    -- Retorna todos os Pedidos
     RETURN QUERY
     select
         maingigapizza_pedido.id,
-        maingigapizza_pedido."horaSolicitacao",
         maingigapizza_pedido."horaEntrega",
-        maingigapizza_pedido."dataPedido",
         maingigapizza_pedido.descricao,
         maingigapizza_pedido."isFinalizado",
-        maingigapizza_itemvenda.nome,
-        maingigapizza_itemvenda.preco,
-        maingigapizza_pizza.nome,
-        maingigapizza_pizza.tamanho,
-        maingigapizza_pizza.preco,
-        iv.nome 
+        maingigapizza_pedido."datahoraSolicitacao"
         
     from
-    
         maingigapizza_pedido
-		inner join maingigapizza_itempedido on maingigapizza_pedido.id = maingigapizza_itempedido.pedido_id 
-		inner join maingigapizza_itemvenda on maingigapizza_itempedido.item_venda_id =  maingigapizza_itemvenda.id 
-		inner join maingigapizza_pizzapedido on maingigapizza_pedido.id = maingigapizza_pizzapedido.pedido_id 
-		inner join maingigapizza_pizza on  maingigapizza_pizzapedido.pizza_id = maingigapizza_pizza.id
-		inner join maingigapizza_saborpizza on maingigapizza_saborpizza.pizza_id  = maingigapizza_pizza.id
-		inner join maingigapizza_itemvenda iv on iv.id = maingigapizza_saborpizza.item_venda_id 
 			
     ORDER BY
         maingigapizza_pedido."dataPedido";
@@ -841,39 +823,22 @@ $$ LANGUAGE plpgsql;
 ----- Listar Específico -----
 
 CREATE OR REPLACE FUNCTION listar_pedido(pedido_id integer)
-RETURNS TABLE (id BIGINT, horasolicitacao timestamp,horaentrega timestamp, datapedido timestamp, descricao varchar, finalizado boolean,
-nome_itemvenda varchar, preco_itemvenda float, nome_pizza varchar, tamanho_pizza integer, preco_pizza FLOAT, nome_itemvendapizza varchar) AS $$
+RETURNS TABLE (id BIGINT, horaentrega timestamp, descricao varchar, finalizado boolean, datahorasolicitacao timestamp) AS $$
 
 BEGIN
-   
+   -- Retorna todos os Pedidos
     RETURN QUERY
-
-	--retorna o pedido pesquisado
-	
-	select
+    select
         maingigapizza_pedido.id,
-        maingigapizza_pedido."horaSolicitacao",
         maingigapizza_pedido."horaEntrega",
-        maingigapizza_pedido."dataPedido",
         maingigapizza_pedido.descricao,
         maingigapizza_pedido."isFinalizado",
-        maingigapizza_itemvenda.nome,
-        maingigapizza_itemvenda.preco,
-        maingigapizza_pizza.nome,
-        maingigapizza_pizza.tamanho,
-        maingigapizza_pizza.preco,
-        iv.nome 
+        maingigapizza_pedido."datahoraSolicitacao"
         
     from
-    
         maingigapizza_pedido
-		inner join maingigapizza_itempedido on maingigapizza_pedido.id = maingigapizza_itempedido.pedido_id 
-		inner join maingigapizza_itemvenda on maingigapizza_itempedido.item_venda_id =  maingigapizza_itemvenda.id 
-		inner join maingigapizza_pizzapedido on maingigapizza_pedido.id = maingigapizza_pizzapedido.pedido_id 
-		inner join maingigapizza_pizza on  maingigapizza_pizzapedido.pizza_id = maingigapizza_pizza.id
-		inner join maingigapizza_saborpizza on maingigapizza_saborpizza.pizza_id  = maingigapizza_pizza.id
-		inner join maingigapizza_itemvenda iv on iv.id = maingigapizza_saborpizza.item_venda_id
-		where maingigapizza_pedido.id = pedido_id 
+	
+	where id = pedido_id
 			
     ORDER BY
         maingigapizza_pedido."dataPedido";

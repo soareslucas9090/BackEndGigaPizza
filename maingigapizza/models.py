@@ -110,9 +110,11 @@ class Sessao(models.Model):
 
 
 class Pedido(models.Model):
-    horaSolicitacao = models.DateTimeField(null=False, default=datetime.now())
+    id_usuario_pedido = models.ForeignKey(
+        Usuario, on_delete=models.RESTRICT, related_name="usuario_pedido_id", null=False
+    )
+    datahoraSolicitacao = models.DateTimeField(null=False, default=datetime.now())
     horaEntrega = models.DateTimeField()
-    dataPedido = models.DateTimeField(null=False, default=datetime.now())
     descricao = models.CharField(max_length=512, null=False)
     isFinalizado = models.BooleanField(default=False)
 
