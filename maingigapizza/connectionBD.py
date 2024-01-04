@@ -289,3 +289,59 @@ def listar_item_venda(id_item_venda):
         resultado = cursor.fetchall()
         cursor.close()
         return resultado
+
+
+def listar_itens_pedido(id_pedido):
+    ...
+
+
+def criar_pedido(
+    hora_entrega, descricao_pedido, id_usuario_requisitante, id_usuario_pedido
+):
+    ...
+
+
+def editar_pedido(
+    id_pedido, hora_entrega, nova_descricao_pedido, id_usuario_requisitante
+):
+    ...
+
+
+def finalizar_pedido(id_pedido):
+    ...
+
+
+def listar_pedido():
+    ...
+
+
+def listar_pedido(pedido_id):
+    ...
+
+
+def listar_pedido_cliente(cliente_id):
+    ...
+
+
+def criar_pizza(id_item_venda, tamanho_pizza):
+    ...
+
+
+def listar_pizza():
+    ...
+
+
+def listar_pizzas_pedido(id_pedido_busca):
+    ...
+
+
+def criar_sabor_pizza(pizza_id, itemvenda_id):
+    ...
+
+
+def criar_pizzapedido(pedido_id, pizza_id):
+    ...
+
+
+def criar_itempedido(valor, quantidade, item_venda_id, pedido_id):
+    ...
