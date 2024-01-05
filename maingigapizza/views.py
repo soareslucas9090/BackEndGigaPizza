@@ -141,7 +141,10 @@ def listarCategoria(request, pk):
                     }
                 )
 
-            return JsonResponse(retorno[0], encoder=DjangoJSONEncoder, safe=False)
+            if len(retorno) > 0:
+                return JsonResponse(retorno[0], encoder=DjangoJSONEncoder, safe=False)
+            else:
+                return JsonResponse(retorno, encoder=DjangoJSONEncoder, safe=False)
 
         except json.JSONDecodeError:
             return JsonResponse({"erro": "Erro ao decodificar o JSON."}, status=400)
@@ -304,7 +307,10 @@ def listarSubcategoria(request, pk):
                     }
                 )
 
-            return JsonResponse(retorno[0], encoder=DjangoJSONEncoder, safe=False)
+            if len(retorno) > 0:
+                return JsonResponse(retorno[0], encoder=DjangoJSONEncoder, safe=False)
+            else:
+                return JsonResponse(retorno, encoder=DjangoJSONEncoder, safe=False)
 
         except json.JSONDecodeError:
             return JsonResponse({"erro": "Erro ao decodificar o JSON."}, status=400)
@@ -530,7 +536,10 @@ def listarItemComprado(request, pk):
                     }
                 )
 
-            return JsonResponse(retorno[0], encoder=DjangoJSONEncoder, safe=False)
+            if len(retorno) > 0:
+                return JsonResponse(retorno[0], encoder=DjangoJSONEncoder, safe=False)
+            else:
+                return JsonResponse(retorno, encoder=DjangoJSONEncoder, safe=False)
 
         except json.JSONDecodeError:
             return JsonResponse({"erro": "Erro ao decodificar o JSON."}, status=400)
@@ -765,7 +774,7 @@ def listarItemVendaPedido(request, pk):
                     }
                 )
 
-            return JsonResponse(retorno[0], encoder=DjangoJSONEncoder, safe=False)
+            return JsonResponse(retorno, encoder=DjangoJSONEncoder, safe=False)
 
         except json.JSONDecodeError:
             return JsonResponse({"erro": "Erro ao decodificar o JSON."}, status=400)
@@ -898,10 +907,8 @@ def listarPedidos(request):
                         "usuario_pedido_id": item[5],
                     }
                 )
-            if len(retorno) > 0:
-                return JsonResponse(retorno[0], encoder=DjangoJSONEncoder, safe=False)
-            else:
-                return JsonResponse(retorno, encoder=DjangoJSONEncoder, safe=False)
+
+            return JsonResponse(retorno, encoder=DjangoJSONEncoder, safe=False)
 
         except json.JSONDecodeError:
             return JsonResponse({"erro": "Erro ao decodificar o JSON."}, status=400)
@@ -959,10 +966,7 @@ def listarPedidoCliente(request, pk):
                     }
                 )
 
-            if len(retorno) > 0:
-                return JsonResponse(retorno[0], encoder=DjangoJSONEncoder, safe=False)
-            else:
-                return JsonResponse(retorno, encoder=DjangoJSONEncoder, safe=False)
+            return JsonResponse(retorno, encoder=DjangoJSONEncoder, safe=False)
 
         except json.JSONDecodeError:
             return JsonResponse({"erro": "Erro ao decodificar o JSON."}, status=400)
@@ -1052,10 +1056,7 @@ def listarPizzasPedido(request, pk):
                     }
                 )
 
-            if len(retorno) > 0:
-                return JsonResponse(retorno[0], encoder=DjangoJSONEncoder, safe=False)
-            else:
-                return JsonResponse(retorno, encoder=DjangoJSONEncoder, safe=False)
+            return JsonResponse(retorno, encoder=DjangoJSONEncoder, safe=False)
 
         except json.JSONDecodeError:
             return JsonResponse({"erro": "Erro ao decodificar o JSON."}, status=400)
