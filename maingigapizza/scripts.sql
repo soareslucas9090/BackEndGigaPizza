@@ -826,24 +826,24 @@ $$ language plpgsql;
 ----- Listar -----
 
 CREATE OR REPLACE FUNCTION listar_pedido()
-RETURNS TABLE (id BIGINT, horaentrega timestamp, descricao varchar, finalizado boolean, datahorasolicitacao timestamp, usuario_pedido_id integer) AS $$
+RETURNS TABLE (id BIGINT, horaentrega timestamp, descricao varchar, finalizado boolean, datahorasolicitacao timestamp, usuario_pedido_id bigint) AS $$
 
 BEGIN
    -- Retorna todos os Pedidos
     RETURN QUERY
     select
         maingigapizza_pedido.id,
-        maingigapizza_pedido."horaEntrega",
+        CAST(maingigapizza_pedido."horaEntrega" AS timestamp) as "horaEntrega",
         maingigapizza_pedido.descricao,
         maingigapizza_pedido."isFinalizado",
-        maingigapizza_pedido."datahoraSolicitacao",
+        CAST(maingigapizza_pedido."datahoraSolicitacao" AS timestamp) as "datahoraSolicitacao",
 		maingigapizza_pedido.id_usuario_pedido_id
         
     from
         maingigapizza_pedido
 			
     ORDER BY
-        maingigapizza_pedido."dataPedido";
+        maingigapizza_pedido."datahoraSolicitacao";
  
 END;
 
@@ -852,17 +852,17 @@ $$ LANGUAGE plpgsql;
 ----- Listar Específico -----
 
 CREATE OR REPLACE FUNCTION listar_pedido(pedido_id integer)
-RETURNS TABLE (id BIGINT, horaentrega timestamp, descricao varchar, finalizado boolean, datahorasolicitacao timestamp, usuario_pedido_id integer) AS $$
+RETURNS TABLE (id BIGINT, horaentrega timestamp, descricao varchar, finalizado boolean, datahorasolicitacao timestamp, usuario_pedido_id bigint) AS $$
 
 BEGIN
    -- Retorna todos os Pedidos
     RETURN QUERY
     select
         maingigapizza_pedido.id,
-        maingigapizza_pedido."horaEntrega",
+        CAST(maingigapizza_pedido."horaEntrega" AS timestamp) as "horaEntrega",
         maingigapizza_pedido.descricao,
         maingigapizza_pedido."isFinalizado",
-        maingigapizza_pedido."datahoraSolicitacao",
+        CAST(maingigapizza_pedido."datahoraSolicitacao" AS timestamp) as "datahoraSolicitacao",
 		maingigapizza_pedido.id_usuario_pedido_id
         
     from
@@ -871,7 +871,7 @@ BEGIN
 	where id = pedido_id
 			
     ORDER BY
-        maingigapizza_pedido."dataPedido";
+        maingigapizza_pedido."datahoraSolicitacao";
  
 END;
 
@@ -880,17 +880,17 @@ $$ LANGUAGE plpgsql;
 ----- Listar Específico por cliente -----
 
 CREATE OR REPLACE FUNCTION listar_pedido_cliente(cliente_id integer)
-RETURNS TABLE (id BIGINT, horaentrega timestamp, descricao varchar, finalizado boolean, datahorasolicitacao timestamp, usuario_pedido_id integer) AS $$
+RETURNS TABLE (id BIGINT, horaentrega timestamp, descricao varchar, finalizado boolean, datahorasolicitacao timestamp, usuario_pedido_id bigint) AS $$
 
 BEGIN
    -- Retorna todos os Pedidos
     RETURN QUERY
     select
         maingigapizza_pedido.id,
-        maingigapizza_pedido."horaEntrega",
+        CAST(maingigapizza_pedido."horaEntrega" AS timestamp) as "horaEntrega",
         maingigapizza_pedido.descricao,
         maingigapizza_pedido."isFinalizado",
-        maingigapizza_pedido."datahoraSolicitacao",
+        CAST(maingigapizza_pedido."datahoraSolicitacao" AS timestamp) as "datahoraSolicitacao",
 		maingigapizza_pedido.id_usuario_pedido_id
         
     from
@@ -899,7 +899,7 @@ BEGIN
 	where id_usuario_pedido_id = cliente_id
 			
     ORDER BY
-        maingigapizza_pedido."dataPedido";
+        maingigapizza_pedido."datahoraSolicitacao";
  
 END;
 
@@ -968,7 +968,7 @@ END;
 $$ LANGUAGE plpgsql;
 ---- Função Listar Pizza Pedido ----
 CREATE OR REPLACE FUNCTION listar_pizzas_pedido(id_pedido_busca integer)
-RETURNS TABLE (id BIGINT, nome_pizza varchar, tamanho_pizza integer, preco_pizza FLOAT, id_item_venda_pizza integer) AS $$
+RETURNS TABLE (id BIGINT, nome_pizza varchar, tamanho_pizza integer, preco_pizza FLOAT, id_item_venda_pizza bigint) AS $$
 
 BEGIN
    
@@ -1036,7 +1036,7 @@ $$ language plpgsql;
 
 ---- Criar Itens no Pedido ----
 
-CREATE OR REPLACE FUNCTION criar_itempedido(valor float,quantidade integer,item_venda_id integer, pedido_id integer)
+CREATE OR REPLACE FUNCTION criar_itempedido(valor float,quantidade integer,item_venda_id integer, pedido_id bigint)
 RETURNS INTEGER AS $$
 DECLARE
 	novo_id integer;

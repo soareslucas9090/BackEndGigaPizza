@@ -898,8 +898,10 @@ def listarPedidos(request):
                         "usuario_pedido_id": item[5],
                     }
                 )
-
-            return JsonResponse(retorno[0], encoder=DjangoJSONEncoder, safe=False)
+            if retorno[0]:
+                return JsonResponse(retorno[0], encoder=DjangoJSONEncoder, safe=False)
+            else:
+                return JsonResponse(retorno, encoder=DjangoJSONEncoder, safe=False)
 
         except json.JSONDecodeError:
             return JsonResponse({"erro": "Erro ao decodificar o JSON."}, status=400)
@@ -925,7 +927,10 @@ def listarPedido(request, pk):
                     }
                 )
 
-            return JsonResponse(retorno[0], encoder=DjangoJSONEncoder, safe=False)
+            if retorno[0]:
+                return JsonResponse(retorno[0], encoder=DjangoJSONEncoder, safe=False)
+            else:
+                return JsonResponse(retorno, encoder=DjangoJSONEncoder, safe=False)
 
         except json.JSONDecodeError:
             return JsonResponse({"erro": "Erro ao decodificar o JSON."}, status=400)
@@ -954,7 +959,10 @@ def listarPedidoCliente(request, pk):
                     }
                 )
 
-            return JsonResponse(retorno[0], encoder=DjangoJSONEncoder, safe=False)
+            if retorno[0]:
+                return JsonResponse(retorno[0], encoder=DjangoJSONEncoder, safe=False)
+            else:
+                return JsonResponse(retorno, encoder=DjangoJSONEncoder, safe=False)
 
         except json.JSONDecodeError:
             return JsonResponse({"erro": "Erro ao decodificar o JSON."}, status=400)
@@ -1016,7 +1024,10 @@ def listarPizza(request, pk):
                     }
                 )
 
-            return JsonResponse(retorno[0], encoder=DjangoJSONEncoder, safe=False)
+            if retorno[0]:
+                return JsonResponse(retorno[0], encoder=DjangoJSONEncoder, safe=False)
+            else:
+                return JsonResponse(retorno, encoder=DjangoJSONEncoder, safe=False)
 
         except json.JSONDecodeError:
             return JsonResponse({"erro": "Erro ao decodificar o JSON."}, status=400)
@@ -1041,7 +1052,10 @@ def listarPizzasPedido(request, pk):
                     }
                 )
 
-            return JsonResponse(retorno[0], encoder=DjangoJSONEncoder, safe=False)
+            if retorno[0]:
+                return JsonResponse(retorno[0], encoder=DjangoJSONEncoder, safe=False)
+            else:
+                return JsonResponse(retorno, encoder=DjangoJSONEncoder, safe=False)
 
         except json.JSONDecodeError:
             return JsonResponse({"erro": "Erro ao decodificar o JSON."}, status=400)
