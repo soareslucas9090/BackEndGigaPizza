@@ -985,7 +985,7 @@ BEGIN
         maingigapizza_pizza.nome,
         maingigapizza_pizza.tamanho,
         maingigapizza_pizza.preco,
-        iv.nome 
+        iv.id 
         
     from
     

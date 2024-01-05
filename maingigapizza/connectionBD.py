@@ -348,7 +348,7 @@ def finalizar_pedido(id_pedido):
         return resultado
 
 
-def listar_pedido():
+def listar_pedidos():
     with connection.cursor() as cursor:
         # Aqui chamo a função criada no banco
         cursor.execute("SELECT * from listar_pedido()")

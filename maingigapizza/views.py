@@ -749,6 +749,190 @@ def listarItemVenda(request, pk):
     return JsonResponse({"erro": "Método não permitido."}, status=405)
 
 
+@csrf_exempt
+def listarItemVendaPedido(request, pk):
+    if request.method == "GET":
+        retorno = []
+        try:
+            itens = listar_itens_pedido(pk)
+            for item in itens:
+                retorno.append(
+                    {
+                        "id": item[0],
+                        "nome": item[1],
+                        "preco": item[2],
+                        "id_subcategoria": item[3],
+                    }
+                )
+
+            return JsonResponse(retorno[0], encoder=DjangoJSONEncoder, safe=False)
+
+        except json.JSONDecodeError:
+            return JsonResponse({"erro": "Erro ao decodificar o JSON."}, status=400)
+
+    return JsonResponse({"erro": "Método não permitido."}, status=405)
+
+
+###  criarPedido  ###
+
+
+@csrf_exempt
+def criarPedido(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            hora_entrega = data.get("hora_entrega")
+            descricao_pedido = data.get("descricao_pedido")
+            id_usuario_requisitante = data.get("id_usuario_requisitante")
+            id_usuario_pedido = data.get("id_usuario_pedido")
+
+            if hora_entrega:
+                if descricao_pedido:
+                    if id_usuario_requisitante:
+                        if id_usuario_pedido:
+                            resultado = criar_pedido(
+                                hora_entrega,
+                                descricao_pedido,
+                                id_usuario_requisitante,
+                                id_usuario_pedido,
+                            )
+                            return JsonResponse({"resultado": resultado})
+                        else:
+                            return JsonResponse(
+                                {"erro": 'O campo "id_usuario_pedido" é obrigatório.'},
+                                status=400,
+                            )
+                    else:
+                        return JsonResponse(
+                            {
+                                "erro": 'O campo "id_usuario_requisitante" é obrigatório.'
+                            },
+                            status=400,
+                        )
+                else:
+                    return JsonResponse(
+                        {"erro": 'O campo "descricao_pedido" é obrigatório.'},
+                        status=400,
+                    )
+            else:
+                return JsonResponse(
+                    {"erro": 'O campo "hora_entrega" é obrigatório.'},
+                    status=400,
+                )
+        except json.JSONDecodeError:
+            return JsonResponse(
+                {"erro": "Erro ao decodificar o JSON no corpo da solicitação."},
+                status=400,
+            )
+    return JsonResponse({"erro": "Método não permitido."}, status=405)
+
+
+###  editar_pedido  ###
+
+
+@csrf_exempt
+def editarPedido(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            id_pedido = data.get("id_pedido")
+            hora_entrega = data.get("hora_entrega")
+            descricao_pedido = data.get("descricao_pedido")
+            id_usuario_requisitante = data.get("id_usuario_requisitante")
+
+            if id_pedido:
+                if hora_entrega:
+                    if descricao_pedido:
+                        if id_usuario_requisitante:
+                            resultado = editar_pedido(
+                                id_pedido,
+                                hora_entrega,
+                                descricao_pedido,
+                                id_usuario_requisitante,
+                            )
+                            return JsonResponse({"resultado": resultado})
+                        else:
+                            return JsonResponse(
+                                {
+                                    "erro": 'O campo "id_usuario_requisitante" é obrigatório.'
+                                },
+                                status=400,
+                            )
+                    else:
+                        return JsonResponse(
+                            {"erro": 'O campo "descricao_pedido" é obrigatório.'},
+                            status=400,
+                        )
+                else:
+                    return JsonResponse(
+                        {"erro": 'O campo "hora_entrega" é obrigatório.'},
+                        status=400,
+                    )
+            else:
+                return JsonResponse(
+                    {"erro": 'O campo "id_pedido" é obrigatório.'},
+                    status=400,
+                )
+        except json.JSONDecodeError:
+            return JsonResponse(
+                {"erro": "Erro ao decodificar o JSON no corpo da solicitação."},
+                status=400,
+            )
+    return JsonResponse({"erro": "Método não permitido."}, status=405)
+
+
+@csrf_exempt
+def listarPedidos(request):
+    if request.method == "GET":
+        retorno = []
+        try:
+            itens = listar_pedidos()
+            for item in itens:
+                retorno.append(
+                    {
+                        "id": item[0],
+                        "horaentrega": item[1],
+                        "descricao": item[2],
+                        "is_finalizado": item[3],
+                        "datahorasolicitacao": item[4],
+                        "usuario_pedido_id": item[5],
+                    }
+                )
+
+            return JsonResponse(retorno[0], encoder=DjangoJSONEncoder, safe=False)
+
+        except json.JSONDecodeError:
+            return JsonResponse({"erro": "Erro ao decodificar o JSON."}, status=400)
+
+    return JsonResponse({"erro": "Método não permitido."}, status=405)
+
+
+@csrf_exempt
+def listarPedido(request, pk):
+    if request.method == "GET":
+        retorno = []
+        try:
+            itens = listar_pedido(pk)
+            for item in itens:
+                retorno.append(
+                    {
+                        "id": item[0],
+                        "horaentrega": item[1],
+                        "descricao": item[2],
+                        "is_finalizado": item[3],
+                        "datahorasolicitacao": item[4],
+                        "usuario_pedido_id": item[5],
+                    }
+                )
+
+            return JsonResponse(retorno[0], encoder=DjangoJSONEncoder, safe=False)
+
+        except json.JSONDecodeError:
+            return JsonResponse({"erro": "Erro ao decodificar o JSON."}, status=400)
+
+    return JsonResponse({"erro": "Método não permitido."}, status=405)
+
+
 ### listar_pedido_cliente ###
 
 
@@ -761,12 +945,12 @@ def listarPedidoCliente(request, pk):
             for item in itens:
                 retorno.append(
                     {
-                        "id_listar_pedido_cliente": item[0],
-                        "horaentrega_listar_pedido_cliente": item[1],
-                        "descricao_listar_pedido_cliente": item[2],
-                        "finalizado_listar_pedido_cliente": item[3],
-                        "datahorasolicitacao_listar_pedido_cliente": item[4],
-                        "usuario_pedido_id_listar_pedido_cliente": item[5],
+                        "id": item[0],
+                        "horaentrega": item[1],
+                        "descricao": item[2],
+                        "is_finalizado": item[3],
+                        "datahorasolicitacao": item[4],
+                        "usuario_pedido_id": item[5],
                     }
                 )
 
@@ -814,6 +998,90 @@ def criarPizza(request):
     return JsonResponse({"erro": "Método não permitido."}, status=405)
 
 
+@csrf_exempt
+def listarPizza(request, pk):
+    if request.method == "GET":
+        retorno = []
+        try:
+            itens = listar_pizza(pk)
+            for item in itens:
+                retorno.append(
+                    {
+                        "id": item[0],
+                        "nome": item[1],
+                        "tamanho": item[2],
+                        "preco": item[3],
+                        "nome_item_venda": item[4],
+                        "descricao_item_venda": item[5],
+                    }
+                )
+
+            return JsonResponse(retorno[0], encoder=DjangoJSONEncoder, safe=False)
+
+        except json.JSONDecodeError:
+            return JsonResponse({"erro": "Erro ao decodificar o JSON."}, status=400)
+
+    return JsonResponse({"erro": "Método não permitido."}, status=405)
+
+
+@csrf_exempt
+def listarPizzasPedido(request, pk):
+    if request.method == "GET":
+        retorno = []
+        try:
+            itens = listar_pizzas_pedido(pk)
+            for item in itens:
+                retorno.append(
+                    {
+                        "id": item[0],
+                        "nome": item[1],
+                        "tamanho": item[2],
+                        "preco": item[3],
+                        "id_item_venda_pizza": item[4],
+                    }
+                )
+
+            return JsonResponse(retorno[0], encoder=DjangoJSONEncoder, safe=False)
+
+        except json.JSONDecodeError:
+            return JsonResponse({"erro": "Erro ao decodificar o JSON."}, status=400)
+
+    return JsonResponse({"erro": "Método não permitido."}, status=405)
+
+
+@csrf_exempt
+def criarSaborPizza(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            pizza_id = data.get("pizza_id")
+            itemvenda_id = data.get("itemvenda_id")
+
+            if pizza_id:
+                if itemvenda_id:
+                    resultado = criar_sabor_pizza(
+                        pizza_id,
+                        itemvenda_id,
+                    )
+                    return JsonResponse({"resultado": resultado})
+                else:
+                    return JsonResponse(
+                        {"erro": 'O campo "pizza_id" é obrigatório.'},
+                        status=400,
+                    )
+            else:
+                return JsonResponse(
+                    {"erro": 'O campo "itemvenda_id" é obrigatório.'},
+                    status=400,
+                )
+        except json.JSONDecodeError:
+            return JsonResponse(
+                {"erro": "Erro ao decodificar o JSON no corpo da solicitação."},
+                status=400,
+            )
+    return JsonResponse({"erro": "Método não permitido."}, status=405)
+
+
 ###  criar_pizzapedido  ###
 
 
@@ -827,7 +1095,7 @@ def criarPizzaPedido(request):
 
             if pedido_id:
                 if pizza_id:
-                    resultado = criar_pizza(
+                    resultado = criar_pizzapedido(
                         pedido_id,
                         pizza_id,
                     )
@@ -854,40 +1122,7 @@ def criarPizzaPedido(request):
 
 
 @csrf_exempt
-def criarSaborPizza(request):
-    if request.method == "POST":
-        try:
-            data = json.loads(request.body)
-            pizza_id = data.get("pizza_id")
-            itemvenda_id = data.get("itemvenda_id")
-
-            if pizza_id:
-                if itemvenda_id:
-                    resultado = criar_pizza(
-                        pizza_id,
-                        itemvenda_id,
-                    )
-                    return JsonResponse({"resultado": resultado})
-                else:
-                    return JsonResponse(
-                        {"erro": 'O campo "pizza_id" é obrigatório.'},
-                        status=400,
-                    )
-            else:
-                return JsonResponse(
-                    {"erro": 'O campo "itemvenda_id" é obrigatório.'},
-                    status=400,
-                )
-        except json.JSONDecodeError:
-            return JsonResponse(
-                {"erro": "Erro ao decodificar o JSON no corpo da solicitação."},
-                status=400,
-            )
-    return JsonResponse({"erro": "Método não permitido."}, status=405)
-
-
-@csrf_exempt
-def criarItempedido(request):
+def criarItemPedido(request):
     if request.method == "POST":
         try:
             data = json.loads(request.body)
@@ -900,7 +1135,7 @@ def criarItempedido(request):
                 if quantidade:
                     if item_venda_id:
                         if pedido_id:
-                            resultado = criar_item_venda(
+                            resultado = criar_itempedido(
                                 valor,
                                 quantidade,
                                 item_venda_id,
@@ -928,58 +1163,6 @@ def criarItempedido(request):
                 return JsonResponse(
                     {"erro": 'O campo "valor" é obrigatório.'}, status=400
                 )
-        except json.JSONDecodeError:
-            return JsonResponse({"erro": "Erro ao decodificar o JSON."}, status=400)
-
-    return JsonResponse({"erro": "Método não permitido."}, status=405)
-
-
-@csrf_exempt
-def listarPizzasPedido(request, pk):
-    if request.method == "GET":
-        retorno = []
-        try:
-            itens = listar_item_venda(pk)
-            for item in itens:
-                retorno.append(
-                    {
-                        "id_pizza_venda": item[0],
-                        "nome_pizza_venda": item[1],
-                        "tamanho_pizza_venda": item[2],
-                        "item_venda_id_pizza_venda": item[3],
-                        "id_item_venda_pizza": item[4],
-                        "is_active": item[5],
-                    }
-                )
-
-            return JsonResponse(retorno[0], encoder=DjangoJSONEncoder, safe=False)
-
-        except json.JSONDecodeError:
-            return JsonResponse({"erro": "Erro ao decodificar o JSON."}, status=400)
-
-    return JsonResponse({"erro": "Método não permitido."}, status=405)
-
-
-@csrf_exempt
-def listarPizza(request, pk):
-    if request.method == "GET":
-        retorno = []
-        try:
-            itens = listar_item_venda(pk)
-            for item in itens:
-                retorno.append(
-                    {
-                        "id_pizza_venda": item[0],
-                        "nome_pizza": item[1],
-                        "tamanho_pizza": item[2],
-                        "item_venda_id_pizza": item[3],
-                        "item_quantidade": item[4],
-                        "is_active": item[5],
-                    }
-                )
-
-            return JsonResponse(retorno[0], encoder=DjangoJSONEncoder, safe=False)
-
         except json.JSONDecodeError:
             return JsonResponse({"erro": "Erro ao decodificar o JSON."}, status=400)
 

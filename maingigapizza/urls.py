@@ -37,4 +37,27 @@ urlpatterns = [
     path("ativar_item_venda/", ativarItemVenda, name="ativar_item_venda"),
     path("listar_itens_venda/", listarItensVenda, name="listar_itens_vendas"),
     path("listar_item_venda/<int:pk>", listarItemVenda, name="listar_item_venda"),
+    path(
+        "listar_item_venda_pedido/<int:pk>",
+        listarItemVendaPedido,
+        name="listar_item_venda_pedido",
+    ),
+    ###### PEDIDO ######
+    path("criar_pedido/", criarPedido, name="criar_pedido"),
+    path("editar_pedido/", editarPedido, name="editar_pedido"),
+    path("listar_pedidos/", listarPedidos, name="listar_pedidos"),
+    path("listar_pedido/<int:pk>", listarPedido, name="listar_pedido"),
+    path(
+        "listar_pedido_cliente/<int:pk>",
+        listarPedidoCliente,
+        name="listar_pedido_cliente",
+    ),
+    path("criar_pizza/", criarPizza, name="criar_pizza"),
+    path("listar_pizza/<int:pk>", listarPizza, name="listar_pizza"),
+    path(
+        "listar_pizzas_pedido/<int:pk>", listarPizzasPedido, name="listar_pizzas_pedido"
+    ),
+    path("criar_sabor_pizza/", criarSaborPizza, name="criar_sabor_pizza"),
+    path("criar_pizza_pedido/", criarPizzaPedido, name="criar_pizza_pedido"),
+    path("criar_item_pedido/", criarItemPedido, name="criar_item_pedido"),
 ]
