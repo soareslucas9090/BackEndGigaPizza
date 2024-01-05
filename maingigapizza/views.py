@@ -884,3 +884,103 @@ def criarSaborPizza(request):
                 status=400,
             )
     return JsonResponse({"erro": "Método não permitido."}, status=405)
+
+
+@csrf_exempt
+def criarItempedido(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            valor = data.get("valor")
+            quantidade = data.get("quantidade")
+            item_venda_id = data.get("item_venda_id")
+            pedido_id = data.get("pedido_id")
+
+            if valor:
+                if quantidade:
+                    if item_venda_id:
+                        if pedido_id:
+                            resultado = criar_item_venda(
+                                valor,
+                                quantidade,
+                                item_venda_id,
+                                pedido_id,
+                            )
+                            return JsonResponse({"resultado": resultado})
+                        else:
+                            return JsonResponse(
+                                {"erro": 'O campo "pedido_id" é obrigatório.'},
+                                status=400,
+                            )
+                    else:
+                        return JsonResponse(
+                            {
+                                "erro": 'O campo "item_venda_id_item_venda" é obrigatório.'
+                            },
+                            status=400,
+                        )
+                else:
+                    return JsonResponse(
+                        {"erro": 'O campo "quantidade_item_venda" é obrigatório.'},
+                        status=400,
+                    )
+            else:
+                return JsonResponse(
+                    {"erro": 'O campo "valor" é obrigatório.'}, status=400
+                )
+        except json.JSONDecodeError:
+            return JsonResponse({"erro": "Erro ao decodificar o JSON."}, status=400)
+
+    return JsonResponse({"erro": "Método não permitido."}, status=405)
+
+
+@csrf_exempt
+def listarPizzasPedido(request, pk):
+    if request.method == "GET":
+        retorno = []
+        try:
+            itens = listar_item_venda(pk)
+            for item in itens:
+                retorno.append(
+                    {
+                        "id_pizza_venda": item[0],
+                        "nome_pizza_venda": item[1],
+                        "tamanho_pizza_venda": item[2],
+                        "item_venda_id_pizza_venda": item[3],
+                        "id_item_venda_pizza": item[4],
+                        "is_active": item[5],
+                    }
+                )
+
+            return JsonResponse(retorno[0], encoder=DjangoJSONEncoder, safe=False)
+
+        except json.JSONDecodeError:
+            return JsonResponse({"erro": "Erro ao decodificar o JSON."}, status=400)
+
+    return JsonResponse({"erro": "Método não permitido."}, status=405)
+
+
+@csrf_exempt
+def listarPizza(request, pk):
+    if request.method == "GET":
+        retorno = []
+        try:
+            itens = listar_item_venda(pk)
+            for item in itens:
+                retorno.append(
+                    {
+                        "id_pizza_venda": item[0],
+                        "nome_pizza": item[1],
+                        "tamanho_pizza": item[2],
+                        "item_venda_id_pizza": item[3],
+                        "item_quantidade": item[4],
+                        "is_active": item[5],
+                    }
+                )
+
+            return JsonResponse(retorno[0], encoder=DjangoJSONEncoder, safe=False)
+
+        except json.JSONDecodeError:
+            return JsonResponse({"erro": "Erro ao decodificar o JSON."}, status=400)
+
+    return JsonResponse({"erro": "Método não permitido."}, status=405)
