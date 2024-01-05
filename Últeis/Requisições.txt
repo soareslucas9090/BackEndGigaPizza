@@ -34,9 +34,27 @@ listar_itens_comprados/ - não pede body no json e retorna uma lista com os iten
 listar_item_comprado/ID - pede o id do item_comprado na URL e retorna os dados do item_comprado ("id_item_comprado", "nome_item_comprado", "preco_item_comprado", "quantidade_item_comprado", "unidade_item_comprado" e "is_active")
 
 ##### ITEM VENDA #####
-criar_item_venda/ - pede "nome_item_venda", "descricao_item_venda", "preco_item_comprado", "id_subcategoria" e "id_usuario_requisitante" e retorna "resultado", sendo este resultado o id do item_venda cadastrado ou 0 se já houver um item_venda com este nome
-editar_item_venda/ - pede "id_item_venda", "nome_item_venda", "descricao_item_venda", "preco_item_comprado" e "id_usuario_requisitante" e retorna "resultado", sendo este resultado 0 se a edição não foi possível (nome já existe) ou 1 se ocorreu com sucesso 
+criar_item_venda/ - pede "nome_item_venda", "descricao_item_venda", "preco_item_venda", "id_subcategoria" e "id_usuario_requisitante" e retorna "resultado", sendo este resultado o id do item_venda cadastrado ou 0 se já houver um item_venda com este nome
+editar_item_venda/ - pede "id_item_venda", "nome_item_venda", "descricao_item_venda", "preco_item_venda" e "id_usuario_requisitante" e retorna "resultado", sendo este resultado 0 se a edição não foi possível (nome já existe) ou 1 se ocorreu com sucesso 
 inativar_item_venda/ - pede "id_item_venda" e retorna "resultado", sendo este resultado com o valor "OK"
 ativar_item_venda/ - pede "id_item_venda" e retorna "resultado", sendo este resultado com o valor "OK"
 listar_itens_venda/ - não pede body no json e retorna uma lista com os itens_comprados cadastrados, ativos ou não
-listar_item_venda/ID - pede o id do item_comprado na URL e retorna os dados do item_comprado ("id_item_venda", "nome_item_comprado", "descricao_item_venda", "preco_item_comprado", "id_subcategoria" e "is_active")
+listar_item_venda/ID - pede o id do item_comprado na URL e retorna os dados do item_venda ("id_item_venda", "nome_item_venda", "descricao_item_venda", "preco_item_comprado", "id_subcategoria" e "is_active")
+listar_item_venda_pedido/ID - pede o id do pedido na URL e retorna os dados dos item_venda q pertecem aquele pedido
+
+##### PEDIDO #####
+criar_pedido/ - pede hora_entrega, descricao_pedido, id_usuario_requisitante, id_usuario_pedido e retorna "resultado", sendo este resultado o id do pedido ou -5 se o usuário não estiver sessão ativa
+editar_pedido/ - pede id_pedido, hora_entrega, descricao_pedido, id_usuario_requisitante e retorna "resultado", sendo este resultado o 1 ou -5 se o usuário não estiver sessão ativa
+listar_pedidos/ - não pede body no json e retorna uma lista com os pedidos cadastrados
+listar_pedido/ID - pede o id do pedido na URL e não pede body no json e retorna uma lista com os pedidos cadastrados
+listar_pedido_cliente/ID - pede o id do cliente na URL e não pede body no json e retorna uma lista com os pedidos cadastrados para aquele cliente
+criar_item_pedido/ pede valor, quantidade, item_venda_id e item_venda_id e retorna "resultado", sendo este resultado o id do novo item_pedido
+criar_pizza_pedido/ pede pedido_id e pizza_id e retorna o id do novo pizza_pedido
+
+##### PIZZA #####
+criar_pizza/ pede id_item_venda e tamanho_pizza e retorna "resultado", sendo este resultado o id da PIZZA
+listar_pizza/ID pede o id da pizza na URL e retorna os dados da pizza solicitada
+listar_pizzas_pedido/ID - pede o id do pedido na URL e retorna as pizzas que estão cadastradas apra aquele pedido
+criar_sabor_pizza/ pede pizza_id e itemvenda_id e retorna o id do novo sabor pizza
+
+

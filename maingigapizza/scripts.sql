@@ -923,26 +923,19 @@ declare
 	nome_pizza varchar;
 	preco_item integer;
 begin 
- --Verifica se há uma pizza com o mesmo nome
-		PERFORM * FROM maingigapizza_pizza
-		WHERE INITCAP(maingigapizza_pizza.nome) = INITCAP(nome_pizza);
-		--se encontrar retorna 0
-		IF FOUND then
-			return 0;
-		else
-            select coalesce(max(maingigapizza_pizza.id),0) +1 from maingigapizza_pizza into novo_id;
-           
-           select nome from maingigapizza_itemvenda into nome_pizza
-           where maingigapizza_itemvenda.id = id_item_venda;
-          
-           select preco from maingigapizza_itemvenda into preco_item
-           where maingigapizza_itemvenda.id = id_item_venda;
-    
-            INSERT INTO maingigapizza_pizza (id, nome, tamanho, preco)
-            VALUES (novo_id, nome_pizza, tamanho, (preco_item * tamanho_pizza));
-       
-            return novo_id;
-		END IF;
+
+		select coalesce(max(maingigapizza_pizza.id),0) +1 from maingigapizza_pizza into novo_id;
+		
+		select nome from maingigapizza_itemvenda into nome_pizza
+		where maingigapizza_itemvenda.id = id_item_venda;
+		
+		select preco from maingigapizza_itemvenda into preco_item
+		where maingigapizza_itemvenda.id = id_item_venda;
+
+		INSERT INTO maingigapizza_pizza (id, nome, tamanho, preco)
+		VALUES (novo_id, nome_pizza, tamanho, (preco_item * tamanho_pizza));
+	
+		return novo_id;
 end;
 
 $$ language plpgsql;
