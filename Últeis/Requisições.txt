@@ -1,11 +1,11 @@
 A API atualmente não conta com nenhuma medida de segurança e não exige autenticação
 O unico Header necessário na requisição é "Content-Type" com o valor "application/json"
-A URL do backend atualmente é: https://gigapizza.onrender.com
+A URL do backend atualmente é: https://backendgigapizza1.rj.r.appspot.com/
 A URL para a API do GigaPizza atualmente é: /api/maingigapizza
 O usuário ADMIN de id 2 é superuser, nunca tem a sessão fechada e tem todos os acessos. Use apenas para DEV
 
 Exemplo:
-https://gigapizza.onrender.com/api/maingigapizza/listar_categoria/1
+https://backendgigapizza1.rj.r.appspot.com/api/maingigapizza/listar_categoria/1
 
 As rotas atualmente são:
 
