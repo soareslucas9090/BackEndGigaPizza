@@ -335,7 +335,7 @@ def editar_pedido(id_pedido, hora_entrega, nova_descricao_pedido, id_usuario_req
 
 def finalizar_pedido(id_pedido):
     with connection.cursor() as cursor:
-        cursor.execute("SELECT * from finalizar_pedido()")
+        cursor.execute("SELECT * from finalizar_pedido(%s)", [id_pedido])
         resultado = cursor.fetchall()
         cursor.close()
         return resultado
