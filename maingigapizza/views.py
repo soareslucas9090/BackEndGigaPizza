@@ -898,7 +898,7 @@ def listarPedidos(request):
                         "usuario_pedido_id": item[5],
                     }
                 )
-            if retorno[0]:
+            if len(retorno) > 0:
                 return JsonResponse(retorno[0], encoder=DjangoJSONEncoder, safe=False)
             else:
                 return JsonResponse(retorno, encoder=DjangoJSONEncoder, safe=False)
@@ -927,7 +927,7 @@ def listarPedido(request, pk):
                     }
                 )
 
-            if retorno[0]:
+            if len(retorno) > 0:
                 return JsonResponse(retorno[0], encoder=DjangoJSONEncoder, safe=False)
             else:
                 return JsonResponse(retorno, encoder=DjangoJSONEncoder, safe=False)
@@ -959,7 +959,7 @@ def listarPedidoCliente(request, pk):
                     }
                 )
 
-            if retorno[0]:
+            if len(retorno) > 0:
                 return JsonResponse(retorno[0], encoder=DjangoJSONEncoder, safe=False)
             else:
                 return JsonResponse(retorno, encoder=DjangoJSONEncoder, safe=False)
@@ -1024,7 +1024,7 @@ def listarPizza(request, pk):
                     }
                 )
 
-            if retorno[0]:
+            if len(retorno) > 0:
                 return JsonResponse(retorno[0], encoder=DjangoJSONEncoder, safe=False)
             else:
                 return JsonResponse(retorno, encoder=DjangoJSONEncoder, safe=False)
@@ -1052,7 +1052,7 @@ def listarPizzasPedido(request, pk):
                     }
                 )
 
-            if retorno[0]:
+            if len(retorno) > 0:
                 return JsonResponse(retorno[0], encoder=DjangoJSONEncoder, safe=False)
             else:
                 return JsonResponse(retorno, encoder=DjangoJSONEncoder, safe=False)
