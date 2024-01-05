@@ -300,7 +300,12 @@ def listar_itens_pedido(id_pedido):
         return resultado
 
 
-def criar_pedido(hora_entrega, descricao_pedido, id_usuario_requisitante, id_usuario_pedido):
+###################     PEDIDO    ###################
+
+
+def criar_pedido(
+    hora_entrega, descricao_pedido, id_usuario_requisitante, id_usuario_pedido
+):
     with connection.cursor() as cursor:
         # Aqui chamo a função criada no banco
         cursor.execute(
@@ -309,7 +314,7 @@ def criar_pedido(hora_entrega, descricao_pedido, id_usuario_requisitante, id_usu
                 hora_entrega,
                 descricao_pedido,
                 id_usuario_requisitante,
-                id_usuario_pedido
+                id_usuario_pedido,
             ],
         )
         resultado = cursor.fetchall()
@@ -319,7 +324,9 @@ def criar_pedido(hora_entrega, descricao_pedido, id_usuario_requisitante, id_usu
         return resultado
 
 
-def editar_pedido(id_pedido, hora_entrega, nova_descricao_pedido, id_usuario_requisitante):
+def editar_pedido(
+    id_pedido, hora_entrega, nova_descricao_pedido, id_usuario_requisitante
+):
     with connection.cursor() as cursor:
         # Aqui chamo a função criada no banco
         cursor.execute(
@@ -349,6 +356,7 @@ def listar_pedido():
         cursor.close()
         return resultado
 
+
 def listar_pedido(pedido_id):
     with connection.cursor() as cursor:
         # Aqui chamo a função criada no banco
@@ -367,15 +375,15 @@ def listar_pedido_cliente(cliente_id):
         return resultado
 
 
+###################     PIZZA    ###################
+
+
 def criar_pizza(id_item_venda, tamanho_pizza):
     with connection.cursor() as cursor:
         # Aqui chamo a função criada no banco
         cursor.execute(
             "SELECT * from criar_pizza(%s, %s)",
-            [
-                id_item_venda, 
-                tamanho_pizza
-            ],
+            [id_item_venda, tamanho_pizza],
         )
         resultado = cursor.fetchall()
         # O resultado é um vetor dentro de um vetor, por isso o [0][0]
@@ -407,10 +415,7 @@ def criar_sabor_pizza(pizza_id, itemvenda_id):
         # Aqui chamo a função criada no banco
         cursor.execute(
             "SELECT * from criar_sabor_pizza(%s, %s)",
-            [
-                pizza_id, 
-                itemvenda_id
-            ],
+            [pizza_id, itemvenda_id],
         )
         resultado = cursor.fetchall()
         # O resultado é um vetor dentro de um vetor, por isso o [0][0]
@@ -418,15 +423,16 @@ def criar_sabor_pizza(pizza_id, itemvenda_id):
         cursor.close()
         return resultado
 
+
+###################     ADICIONAR AO PEDIDO    ###################
+
+
 def criar_pizzapedido(pedido_id, pizza_id):
     with connection.cursor() as cursor:
         # Aqui chamo a função criada no banco
         cursor.execute(
             "SELECT * from criar_pizzapedido(%s, %s)",
-            [
-                pedido_id, 
-                pizza_id
-            ],
+            [pedido_id, pizza_id],
         )
         resultado = cursor.fetchall()
         # O resultado é um vetor dentro de um vetor, por isso o [0][0]
@@ -440,12 +446,7 @@ def criar_itempedido(valor, quantidade, item_venda_id, pedido_id):
         # Aqui chamo a função criada no banco
         cursor.execute(
             "SELECT * from criar_itempedido(%s, %s, %s, %s)",
-            [
-                valor, 
-                quantidade, 
-                item_venda_id, 
-                pedido_id
-            ],
+            [valor, quantidade, item_venda_id, pedido_id],
         )
         resultado = cursor.fetchall()
         # O resultado é um vetor dentro de um vetor, por isso o [0][0]

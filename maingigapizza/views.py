@@ -751,8 +751,9 @@ def listarItemVenda(request, pk):
 
 ### listar_pedido_cliente ###
 
+
 @csrf_exempt
-def listar_pedido_cliente(cliente_id):
+def listarPedidoCliente(cliente_id):
     if request.method == "GET":
         retorno = []
         try:
@@ -779,14 +780,15 @@ def listar_pedido_cliente(cliente_id):
 
 ###  criar_pizza  ###
 
+
 @csrf_exempt
-def criar_pizza(request):
+def criarPizza(request):
     if request.method == "POST":
         try:
             data = json.loads(request.body)
             id_item_venda = data.get("id_item_venda_criar_pizza")
             tamanho_pizza = data.get("tamanho_pizza_criar_pizza")
-            
+
             if id_item_venda:
                 if tamanho_pizza:
                     resultado = criar_pizza(
@@ -806,21 +808,23 @@ def criar_pizza(request):
                 )
         except json.JSONDecodeError:
             return JsonResponse(
-                {"erro": 'Erro ao decodificar o JSON no corpo da solicitação.'},
+                {"erro": "Erro ao decodificar o JSON no corpo da solicitação."},
                 status=400,
             )
     return JsonResponse({"erro": "Método não permitido."}, status=405)
 
+
 ###  criar_pizzapedido  ###
 
+
 @csrf_exempt
-def criar_pizzapedido(request):
+def criarPizzaPedido(request):
     if request.method == "POST":
         try:
             data = json.loads(request.body)
             pedido_id = data.get("pedido_id_criar_pizzapedido")
             pizza_id = data.get("pizza_id_criar_pizzapedido")
-            
+
             if pedido_id:
                 if pizza_id:
                     resultado = criar_pizza(
@@ -840,21 +844,23 @@ def criar_pizzapedido(request):
                 )
         except json.JSONDecodeError:
             return JsonResponse(
-                {"erro": 'Erro ao decodificar o JSON no corpo da solicitação.'},
+                {"erro": "Erro ao decodificar o JSON no corpo da solicitação."},
                 status=400,
             )
     return JsonResponse({"erro": "Método não permitido."}, status=405)
 
+
 ### criar_sabor_pizza ###
 
+
 @csrf_exempt
-def criar_sabor_pizza(request):
+def criarSaborPizza(request):
     if request.method == "POST":
         try:
             data = json.loads(request.body)
             pizza_id = data.get("pizza_id_criar_sabor_pizza")
             itemvenda_id = data.get("itemvenda_id_criar_sabor_pizza")
-            
+
             if pizza_id:
                 if itemvenda_id:
                     resultado = criar_pizza(
@@ -874,8 +880,7 @@ def criar_sabor_pizza(request):
                 )
         except json.JSONDecodeError:
             return JsonResponse(
-                {"erro": 'Erro ao decodificar o JSON no corpo da solicitação.'},
+                {"erro": "Erro ao decodificar o JSON no corpo da solicitação."},
                 status=400,
             )
     return JsonResponse({"erro": "Método não permitido."}, status=405)
-
