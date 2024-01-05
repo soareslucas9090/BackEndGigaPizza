@@ -753,7 +753,7 @@ def listarItemVenda(request, pk):
 
 
 @csrf_exempt
-def listarPedidoCliente(cliente_id):
+def listarPedidoCliente(request, pk):
     if request.method == "GET":
         retorno = []
         try:
