@@ -786,8 +786,8 @@ def criarPizza(request):
     if request.method == "POST":
         try:
             data = json.loads(request.body)
-            id_item_venda = data.get("id_item_venda_criar_pizza")
-            tamanho_pizza = data.get("tamanho_pizza_criar_pizza")
+            id_item_venda = data.get("id_item_venda")
+            tamanho_pizza = data.get("tamanho_pizza")
 
             if id_item_venda:
                 if tamanho_pizza:
@@ -822,8 +822,8 @@ def criarPizzaPedido(request):
     if request.method == "POST":
         try:
             data = json.loads(request.body)
-            pedido_id = data.get("pedido_id_criar_pizzapedido")
-            pizza_id = data.get("pizza_id_criar_pizzapedido")
+            pedido_id = data.get("pedido_id")
+            pizza_id = data.get("pizza_id")
 
             if pedido_id:
                 if pizza_id:
@@ -858,8 +858,8 @@ def criarSaborPizza(request):
     if request.method == "POST":
         try:
             data = json.loads(request.body)
-            pizza_id = data.get("pizza_id_criar_sabor_pizza")
-            itemvenda_id = data.get("itemvenda_id_criar_sabor_pizza")
+            pizza_id = data.get("pizza_id")
+            itemvenda_id = data.get("itemvenda_id")
 
             if pizza_id:
                 if itemvenda_id:
